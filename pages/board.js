@@ -13,10 +13,30 @@ import { AuthContext } from './auth.js';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { UploadModal } from './upload';
 
+/*
+   function foo() {} is same as const foo = () => {} just fyi 
+   also //#region and //#endregion is a way of code folding, pls dont delete its pretty nice
+    
+    • Pressable is all the icons in the Appbar, check that shit out the icons change when you click on them big flex
+      the onPress is where it'll route to, rn only upload is linked to uploadModal, and the account one signs you out
+      If you implement a delete account, feel free to make it the onPress method of one of the icons since they're all dead rn
 
-// pick image from cameral roll function
+    • Theres a top and bottom appbar, those are self explanatory
+    • The Modal is the upload pop-up, since its a pop-up it doesnt matter where its located in the JSX tree cuz its invisible
+
+    • Since Pinned will just be a filter so I'm not doing anything with it
+    • I will add a settings page, one that half pops out like Reddit, but later
+    • Filter will have a dropdown kind of thing for you to enter filters, I'll add that eventually 
 
 
+    • Back end we need metadata so we can do the filtering and shit
+    • pickImage has to be accessible from upload.js, which would just be an import statement except a call to setFlyers in it
+      that you need means I can't use it elsewhere. Not sure how to resolve this yet. I think that I will have to port the org,
+      contact info, and date over to this file, so then I can probably port the uri as well, that's likely the solution.
+
+
+
+*/
 
 // Main board page
 export default function Board({ navigation }) { //add {navigation, route} in the paranthesis to use navigation
@@ -158,7 +178,7 @@ export default function Board({ navigation }) { //add {navigation, route} in the
         />
         */}
 
-      {/* placeholder */}
+      {/* placeholder - this makes the bottom appbar stay at bottom, you can probably leave it here even with flatlist, idk */}
       <View style={{ flex: 1 }} />
 
 

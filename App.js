@@ -13,6 +13,45 @@ import Board from './pages/board';
 import {Provider as PaperProvider} from 'react-native-paper';
 import {theme} from './styles';
 
+/* 
+ Alright dipshit here's your guide to the code
+
+ App.js : 
+  •  const [authState, dispatch] = React.useReducer ... 
+      This is basically useState except its not.
+      authState is a dictionary of values that keeps track of if user is authorized, 
+      needs email verified, entered wrong password, or is logging in or out (entering).
+      authState.auth is what determines if you get to see board page, see the navigator
+      .verify, .wrong and .entering are all for error messages and rendering (entering switches animation direction)
+      The CustContext Provider provides this authState to all the pages in the app so they can use it, basically like making it global var
+      Think of dispatch() as setAuthState() just for a dictionary not a value
+
+  • const authContext = React.useMemo ...
+      The AuthProvider provides the authContext to the rest of the app just like CustContext
+      except this time the authContext is a set of functions in useMemo, which is just like a dictionary of functions
+      These functions are signIn, signUp, signOut, and deleteAccount (coming soon)
+      The content of those functions are what you wrote already, self explanatory, I only added dispatches for error handling (unfinished)
+      Basically, you can call those functions anywhere you want, so do that I guess, idk why you would need to 
+
+  • If you want to add a page which you shouldn't need to probably, it goes in navigator
+
+  • Nothing in App.js needs to change except for the authContext functions if necessary 
+
+General Structure
+  Every page is its own file, stored in ./pages
+  • auth.js - just some dumb shit so it wouldnt get mad about circular imports, ignore that
+  • upload.js - isn't actualy a page its a Modal, look it up if you care but its basically a pop up so theres no navigation or anything
+  • Use navigation for anything WITHIN the same auth structure. So you can nav in auth: false pages and in auth: true pages,
+    i.e. board/upload/settings/etc or welcome/login/createAccount 
+
+  There's some notes about each page in their respective files
+  Have fun with imports and versions lmfao i literally make a new expo project good luck, theoretically ur fine but lmao
+
+  I know that its going to the unauth pages then to the auth pages once it loads, ill fix later, you'll see flash of welcome before board
+*/
+
+
+
 //#region Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyB96P24f4eO8ibFRORLopeZGzyMeatzZKI",
@@ -32,17 +71,6 @@ if (!firebase.apps.length) {
 const Stack = createStackNavigator();
 
 export default function App({navigation}) {
-
-  // validate that the password meets our requirements - right now just >8 characters
-  function validatePassword(password) {
-    const [valid, setValid] = useState(false);
-    if (password.length > 8) {
-      setValid(true);
-    } else {
-      setValid(false);
-    }
-    return valid;
-  }
 
   //#region auth stuff - auth states, login/logout/signup, remember me firebase
   // sets up different auth states for transitioning through app

@@ -1,13 +1,14 @@
 import { Dimensions, StyleSheet, StatusBar } from "react-native";
 import { DefaultTheme } from "react-native-paper";
 
-//styling
+// constants for use in other files
 export const windowWidth = Dimensions.get('window').width;
 export const windowHeight = Dimensions.get('window').height;
 export const appbarColor = 'rgba(240,240,240, 1)';
 export const buttonBorderColor = 'rgba(255,255,255,0.8)';
 export const buttonColor = 'rgba(255,255,255,0.2)';
 
+// This is some cancer for the InputText, it sorta works but its annoying, just let me change the colors at this point prolly
 export const theme = {
     ...DefaultTheme,
     colors: {

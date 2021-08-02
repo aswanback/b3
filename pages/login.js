@@ -16,6 +16,14 @@ import "firebase/database";
 import "firebase/storage";
 import { AuthContext, CustContext } from './auth.js';
 
+/*
+ Pretty basic shit, all the heavy lifting is done in App.js with signIn in authContext
+ KeyboardAwareScrollView just gets shit outta the way for the keyboard
+I'll have to do some of the same provider shit here to connect the authStates to the wrong password message, shouldnt be horrible
+
+I dont think you have anything to change in this file
+
+*/
 
 // login page
 export default function Login({ navigation }) {
@@ -25,14 +33,11 @@ export default function Login({ navigation }) {
   const [passwordText, onChangePassword] = useState(null);
   const [isWrongPassword, setWrongPassword] = useState(false)
 
-  //#region back-end
 
-  // shows the wrong password message
+  // shows the wrong email/password message - logic yet to be implemented
   function loginError(){
-    
     return false;
   }
-  //#endregion
 
 
   //#region front-end

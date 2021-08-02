@@ -12,7 +12,15 @@ import "firebase/storage";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { AuthContext, CustContext } from './auth.js';
 
+/*
+  Purdue email and password strength verification here, see if pass and confirmPass match
+  heavy lifting done in App.js with signUp
+  more provider shit needed probably, in progress
+  back end on your side shouldnt be a problem here - nothing needed
 
+  I dont think you have anything to change in this file
+
+*/
 
 
 
@@ -28,30 +36,15 @@ export default function CreateAccount({ navigation }) {
   const { signUp } = React.useContext(AuthContext);
 
   //#region back-end
-  /*function PasswordMatchMessage() {
-    const [isMatch, setMatch] = useState(true);
-    const [isValid, setValid] = useState(true);
-    useEffect(() => {
-      if ((passwordText || confirmPasswordText) == '') {
-        setMatch(true);
-        setValid(true);
-      }
-      if (passwordText == confirmPasswordText) {
-        setMatch(true)
-      } else if (authState.match == true) { // means password rejected by auth
-        dispatch({ auth: false })
-        setValid(false)
-      }
-    }, [authState]);
-    return <View style={{ height: 25 }}><Text style={{ color: isMatch ? 'transparent' : 'red', alignSelf: 'center' }}>Passwords don't match. Please try again.</Text></View>;
-  }*/
 
   const [errorMsg,setErrorMsg] = useState(null);
 
+  // see if email has @purdue.edu
   function emailError() {
     return (emailText !== null && emailText.trim() !== null && !emailText.trim().includes('@purdue.edu'));
   }
   
+  // password match confirmPassword, password length requirement, we can add others if really needed
   function passwordError() {
     const [status,setStatus] = useState(false);
     useEffect(()=>{
@@ -67,8 +60,6 @@ export default function CreateAccount({ navigation }) {
   },[passwordText,confirmPasswordText]);
   return status;
   }
-
-  
 
   //#endregion
 

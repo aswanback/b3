@@ -14,6 +14,16 @@ import { AuthContext } from './auth.js';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
+/* 
+    Modal is just a pop-up, this uploadModal is the content of the Modal in board.js
+    It has its own Modal which is the DatePicker scroll wheel
+    You aren't allowed to change the text in the datepicker input-text, its a cheese to make them look the same
+    Not sure how to export the contact, date, and org info but i imagine its more provider shit that i'll work on
+
+    If my strat with porting all the variables here back to board works, you shouldnt need anything from this file and pickImage
+    will end up here, but that's up in the air as of now.
+
+*/
 
 export function UploadModal(modalVis) {
 
@@ -22,17 +32,11 @@ export function UploadModal(modalVis) {
     const [contact, setContact] = useState(null);
     const [dateVis, setDateVis] = useState(false);
 
-    // changes date and time - https://github.com/react-native-datetimepicker/datetimepicker#mode-optional
+    // changes date and time - dont ask me why it just has to be this https://github.com/react-native-datetimepicker/datetimepicker#mode-optional
     const onChangeDate = (event, selectedDate) => {
         const currentDate = selectedDate || date;
         setDate(currentDate);
     };
-
-    function DispDate() {
-        return <View><Text>{date}</Text></View>;
-    }
-
-
 
     return (
         <View style={{ flex: 1,}} >

@@ -12,6 +12,13 @@ import "firebase/auth";
 import "firebase/database";
 import "firebase/storage";
 
+/*
+  Most basic page, literally just a view with two buttons you can figure it out
+
+  Nothing to change here, just looks which I'll do since I'm unfortunately intimately acquainted
+  
+*/
+
 export default function Welcome({ navigation }) {
   return (
     <ImageBackground source={require('../assets/Bulletin_bg.png')} style={styles.bkgd}>
