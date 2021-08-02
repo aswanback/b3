@@ -25,7 +25,8 @@ export const styles = StyleSheet.create({ // getting a delay in background showi
         height: windowHeight,
         position: 'absolute',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        flex:1
     },
     
     bulletin_image: {
@@ -90,15 +91,9 @@ export const styles = StyleSheet.create({ // getting a delay in background showi
     },
 
     title: {
-        color: 'black',
+        color: 'rgba(60,60,60,1)',
         fontSize: 24,
         alignSelf: 'center',
     },
-    upload_text: {
-        color: 'black',
-        paddingLeft: 30,
-    }
-
-
 
 });

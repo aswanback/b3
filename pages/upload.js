@@ -25,53 +25,104 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 
 */
 
-export function UploadModal(modalVis) {
+
+
+
+export function UploadModal(props) {
 
     const [date, setDate] = useState(new Date());
     const [org, setOrg] = useState(null);
+    const [uri, setUri] = useState(null);
     const [contact, setContact] = useState(null);
     const [dateVis, setDateVis] = useState(false);
 
-    // changes date and time - dont ask me why it just has to be this https://github.com/react-native-datetimepicker/datetimepicker#mode-optional
+    //change date, org, contact and update them globally   https://github.com/react-native-datetimepicker/datetimepicker#mode-optional
     const onChangeDate = (event, selectedDate) => {
         const currentDate = selectedDate || date;
         setDate(currentDate);
+        props.setDate(currentDate);
     };
 
-    return (
-        <View style={{ flex: 1,}} >
+    const onChangeOrg = (org) => {
+        props.setOrg(org);
+        setOrg(org);
+    }
+    const onChangeContact = (contact) => {
+        props.setContact(contact);
+        setContact(contact);
+    }
 
+    async function pickImage() {
+        const { status } = await ImagePicker.getMediaLibraryPermissionsAsync();
+        if (status !== 'granted') {
+            const { newStatus } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+            if (newStatus !== 'granted') {
+                alert('Sorry, we need camera roll permissions to make this work!');
+                return;
+            }
+        }
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            //allowsEditing: true, //aspect: [4, 3],
+            quality: 1,
+        });
+        if (!result.cancelled) {
+            props.setFlyerUri(result.uri);
+            setUri(result.uri);
+            //setFlyers(Flyers => [...Flyers, { uri: result.uri }]); // updates flyers array with new uri
+            return (result.uri);
+        };
+    };
+
+    function ImageDisp() {
+        if (uri) {
+            return (
+                <Image source={{ uri: uri }} resizeMode='contain' style={{ flex: 1, flexShrink: 1, borderRadius: 15 }} />
+            );
+        } else {
+            return (
+                <View>
+                    <Icon name='plus-box' size='60' style={{ paddingHorizontal: 10, alignSelf: 'center' }} />
+                    <Text style={{ color: 'rgba(60,60,60,1)', fontSize: 18, alignSelf: 'center' }}>Pick a photo</Text>
+                </View>
+            );
+        }
+    }
+
+    return (
+        <View style={{ flex: 1, }} >
             <KeyboardAwareScrollView contentContainerStyle={{ flex: 1 }} extraHeight={30} extraScrollHeight={100} style={{ flex: 1, width: windowWidth, alignContent: 'center' }} resetScrollToCoords={{ x: 0, y: 0 }} enableAutomaticScroll={true} scrollEnabled={false}>
+                
                 <View style={{ height: windowHeight * 0.02 }} />
-                {/* Load the image here by uri - idk how to do  */}
-                <View style={{ alignSelf: 'center', justifyContent: 'center', width: windowWidth * 0.8, aspectRatio: 3 / 4, borderColor: 'black', borderRadius: 15, borderWidth: 1 }} >
-                    <TouchableOpacity onPress={null}>
+
+                <View style={{ alignSelf: 'center', justifyContent: 'center', width: windowWidth * 0.8, aspectRatio: 3 / 4, borderColor: 'rgba(60,60,60,1)', borderRadius: 15, borderWidth: 1 }} >
+                    <TouchableOpacity onPress={pickImage} style={{ flex: 1, padding: 10 }}>
                         <LinearGradient
                             start={[1, 1]}
                             end={[0, 0]}
                             colors={['rgba(255,255,255,0.0)', 'rgba(255,255,255, 0.0)']}
-                            style={{ justifyContent: 'center', alignSelf: 'center', padding: 10 }}>
-                            <Icon name='plus-box' size='60' style={{ paddingHorizontal: 10, alignSelf: 'center' }} />
-                            <Text style={{ color: 'black', fontSize: 18, alignSelf: 'center' }}>Pick a photo</Text>
+                            style={{ flex: 1, justifyContent: 'center' }}>
+                            <ImageDisp />
                         </LinearGradient>
                     </TouchableOpacity>
                 </View>
+
                 <View style={{ height: windowHeight * 0.03 }} />
 
                 <View style={{ flex: 0 }}>
                     <TouchableOpacity onPress={() => { setDateVis(true) }}>
-                        <View pointerEvents='none'>
+                        <View pointerEvents='box-only'>
                             <TextInput
                                 label='Date of event'
                                 mode='outlined'
                                 style={styles.input}
+                                onChangeText={onChangeOrg}
                                 value={date.toDateString()}
                                 theme={theme}
                             />
                         </View>
                     </TouchableOpacity>
                 </View>
-
 
                 <View style={{ height: windowHeight * 0.01 }} />
 
@@ -80,17 +131,17 @@ export function UploadModal(modalVis) {
                     mode='outlined'
                     theme={theme}
                     style={styles.input}
-                    onChangeText={setOrg}
+                    onChangeText={onChangeOrg}
                     value={org}
-
                 />
+                
                 <View style={{ height: windowHeight * 0.01 }} />
 
                 <TextInput
                     label='Contact email or phone (optional)'
                     mode='outlined'
                     style={styles.input}
-                    onChangeText={setContact}
+                    onChangeText={onChangeContact}
                     value={contact}
                     theme={theme}
                 />
@@ -98,7 +149,6 @@ export function UploadModal(modalVis) {
             </KeyboardAwareScrollView>
 
 
-            {/* Date Modal */}
             <Modal animationType='slide' transparent={true} visible={dateVis} >
                 <TouchableWithoutFeedback onPress={() => { setDateVis(false) }}>
                     <View style={{ flex: 1 }} />
@@ -110,8 +160,6 @@ export function UploadModal(modalVis) {
                     <DateTimePicker value={date} mode='date' onChange={onChangeDate} display='spinner' />
                 </View>
             </Modal>
-
-
         </View>
     );
 }

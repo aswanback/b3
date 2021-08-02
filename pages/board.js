@@ -44,24 +44,13 @@ export default function Board({ navigation }) { //add {navigation, route} in the
   const [flyers, setFlyers] = useState([]);
   const [doneDownloading, setDownloadStatus] = useState(false);
   const [modalVis, setModalVis] = useState(false);
+
+  const [org, setOrg] = useState('init_org');
+  const [date, setDate] = useState(new Date());
+  const [contact, setContact] = useState('init_contact');
+  const [flyerUri, setFlyerUri] = useState('init_uri');
   
-  async function pickImage() {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      //allowsEditing: true,
-      //aspect: [4, 3],
-      quality: 1,
-    });
-    // at this point, 'result' holds the uri - 'result' by itself isn't an image
-  
-    // if image is selected
-    if (!result.cancelled) {
-      console.log('image upload started')
-      //setFlyers(Flyers => [...Flyers, { uri: result.uri }]); // updates flyers array with new uri
-      console.log(result.uri)
-      return(result.uri);
-    };
-  };
+
   
   //#region back-end
   /*
@@ -125,6 +114,12 @@ export default function Board({ navigation }) { //add {navigation, route} in the
   }, []); // empty array dependency means it only runs on initial render
 */
 
+function beginUpload(){
+  // start to upload the flyer based on the uri and metadata
+  // you have org, contact, date, and flyerUri variables
+}
+
+
   // request camera roll permissions on initial render
   useEffect(() => {
     (async () => {
@@ -182,7 +177,6 @@ export default function Board({ navigation }) { //add {navigation, route} in the
       <View style={{ flex: 1 }} />
 
 
-
       {/* Bottom Appbar */}
       <Appbar style={[styles.appbar, { height: 70 }]}>
         <View style={{ flex: 1 }} />
@@ -203,25 +197,25 @@ export default function Board({ navigation }) { //add {navigation, route} in the
       {/* Pop up for upload image - location doesnt matter*/}
       <Modal visible={modalVis} presentationStyle='fullScreen' animationType='slide'>
         {/* Modal header */}
-        <Appbar.Header style={[styles.appbar,{height:55}]}>
-          <Button title='cancel' onPress={() => { setModalVis(false) }} />
+        <Appbar.Header style={[styles.appbar,{height:50}]}>
+          <View style={{width:70}} >
+          <Button title='Cancel' onPress={() => { setModalVis(false); setOrg(null); setContact(null); setDate(null); setFlyerUri(null); }} />
+          </View>
           <View style={{ flex: 1 }} />
           
-          <Text style={styles.title}>Upload a flyer</Text>
+          <Text style={styles.title}>Upload</Text>
           <View style={{ flex: 1 }} />
-          <Button title='submit' onPress={() => { setModalVis(false) }} />
+          <View style={{width:70}} >
+          <Button title='Done' onPress={() => { setModalVis(false); beginUpload(); }} />
+          </View>
         </Appbar.Header>
+
         {/* Content of the modal - upload.js */}
-        <UploadModal />
+        <UploadModal setOrg={setOrg} setDate={setDate} setContact={setContact} setFlyerUri={setFlyerUri} />
+        
       </Modal>
 
     </ImageBackground>
-
-
-
-
-
-
   );
   //#endregion
 };

@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { ImageBackground,View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { AuthContext, CustContext } from './pages/auth';
@@ -11,7 +12,7 @@ import Welcome from './pages/welcome';
 import CreateAccount from './pages/createAccount';
 import Board from './pages/board';
 import {Provider as PaperProvider} from 'react-native-paper';
-import {theme} from './styles';
+import {styles, theme} from './styles';
 
 /* 
  Alright dipshit here's your guide to the code
@@ -155,17 +156,17 @@ export default function App({navigation}) {
   // Allows access to authState as basically a global variable - needed for telling user wrong password or verify email
   const custContext = [authState, dispatch];
 
-  // Remember me functionality
-  useEffect(() => { firebase.auth().onAuthStateChanged(function (user) { dispatch({ auth: user ? true : false }) }); }, []);
+  // Remember me functionality - this has some issue with unmounted component
+  //useEffect(() => { firebase.auth().onAuthStateChanged((user) => { dispatch({ auth: user ? true : false }) }); }, []);
   //#endregion
 
   //#region Navigation
   return (
-  
     <CustContext.Provider value={custContext}>
       <AuthContext.Provider value={authContext} >
       <PaperProvider theme={theme}>
-        <NavigationContainer>
+      <NavigationContainer >
+        
           <Stack.Navigator headerMode='none'>
             {authState.auth ? (     // User is signed in - can only access below screens
               <>
@@ -177,7 +178,7 @@ export default function App({navigation}) {
                 <Stack.Screen name="login" component={Login} headerMode='none' />
                 <Stack.Screen name="createAccount" component={CreateAccount} headerMode='none' />
               </>
-            )}
+            )} 
           </Stack.Navigator>
         </NavigationContainer>
         </PaperProvider>
