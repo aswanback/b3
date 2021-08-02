@@ -1,4 +1,4 @@
-import { styles, background, windowHeight, windowWidth, theme } from '../styles.js';
+import { styles, windowHeight, windowWidth, theme } from '../styles.js';
 import 'react-native-gesture-handler';
 import { setStatusBarBackgroundColor, StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect, useRef, useContext } from 'react';

@@ -1,4 +1,4 @@
-import { styles, windowHeight } from '../styles.js';
+import { styles } from '../styles.js';
 import 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Appbar, IconButton } from 'react-native-paper';

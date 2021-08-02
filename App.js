@@ -166,7 +166,6 @@ export default function App({navigation}) {
       <AuthContext.Provider value={authContext} >
       <PaperProvider theme={theme}>
       <NavigationContainer >
-        
           <Stack.Navigator headerMode='none'>
             {authState.auth ? (     // User is signed in - can only access below screens
               <>

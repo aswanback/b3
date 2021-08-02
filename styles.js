@@ -1,12 +1,11 @@
 import { Dimensions, StyleSheet, StatusBar } from "react-native";
 import { DefaultTheme } from "react-native-paper";
+import EStyleSheet from 'react-native-extended-stylesheet';
+//import { RFPercentage, RFValue } from "react-native-responsive-fontsize";
 
 // constants for use in other files
 export const windowWidth = Dimensions.get('window').width;
 export const windowHeight = Dimensions.get('window').height;
-export const appbarColor = 'rgba(240,240,240, 1)';
-export const buttonBorderColor = 'rgba(255,255,255,0.8)';
-export const buttonColor = 'rgba(255,255,255,0.2)';
 
 // This is some cancer for the InputText, it sorta works but its annoying, just let me change the colors at this point prolly
 export const theme = {
@@ -19,62 +18,75 @@ export const theme = {
 }
 
 
-export const styles = StyleSheet.create({ // getting a delay in background showing which isn't ideal
+EStyleSheet.build({
+
+    $rem: Math.round(windowWidth / 38),
+    $width: windowWidth,
+    $height: windowHeight,
+
+    $appbar_c: 'rgba(240,240,240, 1)',
+    $title_c: 'rgba(60,60,60,1)',
+    $button_border_c: 'rgba(255,255,255,0.8)',
+
+});
+
+
+
+export const styles = EStyleSheet.create({ // getting a delay in background showing which isn't ideal
     bkgd: {
-        width: windowWidth,
-        height: windowHeight,
+        width: '100%',
+        height: '100%',
         position: 'absolute',
         justifyContent: 'center',
         alignItems: 'center',
         flex:1
     },
-    
     bulletin_image: {
-        height: 90,
+        height: '20%',
         resizeMode: 'contain',
-        aspectRatio: 762 / 250,
         flexShrink: 1,
     },
     appbar: {
-        width: windowWidth,
-        backgroundColor: appbarColor,
+        width: '100%',
+        backgroundColor: '$appbar_c',
         shadowColor: 'black',
-        paddingBottom:15,
+        paddingBottom: '1.5rem',
         justifyContent: 'center',
         marginTop: StatusBar.currentHeight,
     },
 
     input: {
-        width: "85%",
+        width: '85%',
         alignSelf: 'center',
-        fontSize: 18,
+        fontSize: '1.8rem',
     },
     input_text: {
         color: 'white',
-        marginLeft: 30,
+        marginLeft: '3rem',
     },
 
     button: {
         elevation: 1,
         justifyContent: 'center',
         flexDirection: 'column',
-        borderRadius: 25,
-        borderColor: buttonBorderColor,
-        borderWidth: 1,
-        paddingHorizontal: 35,
-        paddingVertical: 15,
-        width: windowWidth / 1.5,
+        borderRadius: '2.5rem',
+        borderColor: '$button_border_c',
+        borderWidth: '0.1rem',
+        paddingHorizontal: '3.5rem',
+        paddingVertical: '1.5rem',
+        width: '65%',
         alignSelf: 'center'
     },
+
     button_text: {
         color: 'white',
-        fontSize: 24,
+        fontSize: '2.4rem',
         alignSelf: 'center',
     },
 
     icon_top: {
-        paddingTop: 10,
-        paddingHorizontal: 10,
+        paddingTop: '1rem',
+        paddingHorizontal: '1rem',
     },
     icon_bottom: {
         alignSelf: 'center'
@@ -82,17 +94,17 @@ export const styles = StyleSheet.create({ // getting a delay in background showi
 
 
     flatlist_img: {
-        width: windowWidth/2.5,
-        height: 200,
-        borderWidth: 2,
+        width: '40%',
+        height: '20%',
+        borderWidth: '0.2rem',
         borderColor: 'white',
         resizeMode: 'contain',
-        margin: 4
+        margin: '0.4rem',
     },
 
     title: {
-        color: 'rgba(60,60,60,1)',
-        fontSize: 24,
+        color: '$title_c',
+        fontSize: '2.4rem',
         alignSelf: 'center',
     },
 

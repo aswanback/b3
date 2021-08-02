@@ -17,8 +17,8 @@
 • Click to enlarge - associated info page
 • Gallery mode
 • Metadata filtering
-• Make view change when keyboard pops up
-• get rid of spaces
+• reject blank password so doesnt go thru to firebase
+• 
 
 #### Metadata
 Date of event
