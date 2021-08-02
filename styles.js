@@ -13,8 +13,8 @@ export const theme = {
     ...DefaultTheme,
     colors: {
         ...DefaultTheme.colors,
-        primary: 'black',
-        secondary: 'red',
+        primary:'black',
+        secondary: 'red', 
     }
 }
 

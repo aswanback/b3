@@ -51,7 +51,7 @@ export default function Login({ navigation }) {
 
         <View style={{ height: windowHeight * 0.05 }} />
 
-        <View style={{ height: 200, alignSelf: 'center', }}>
+        <View style={{ height: windowHeight * 0.2, alignSelf: 'center', }}>
           <Image style={{ flex: 1, flexShrink: 1, resizeMode: 'contain' }} source={require('../assets/B_icon.png')} />
         </View>
 
