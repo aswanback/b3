@@ -3,7 +3,6 @@
 
 ## FRONT END
 
-
 ### Not Implemented Yet
 • Implement a real tab bar
 • Implement correct navigation hierarchy
@@ -19,6 +18,7 @@
 • Metadata filtering
 • Make view change when keyboard pops up
 • get rid of spaces
+* swag
 
 #### Metadata
 Date of event
@@ -33,6 +33,8 @@ Contact Info
 • Fix splash screen
 • Formatting of FlatList
 • Raise tab bar and appbar. SafeArea issues?
+- make text boxes for log in have a less black outline. probably just white
+= board page center top logo. idk what to put but obviously it looks stupid as shit rn. maybe just smaller
 
 
 
@@ -50,4 +52,40 @@ Contact Info
 ### Needs Fixed
 • Reupload/download
 • Reformat firebase confirmation and reset emails for auth
+
+
+## BACKEND IDEAL FLOW - tab indicates we must wait for process above 
+    IN DATABASE example:
+        1: 
+            status: (active)(deleted)
+            url: (url)
+            uid: (uid)
+            organization: (none)(organization)
+            eventDate: (none)(date)
+            contact: (none)(contact)
+        numFlyers: 1
+
+    
+    -> on enter to board page, we have given UID
+
+    -> download flyers
+        -> fetch numFlyers
+            -> loop through each flyer
+                -> store all data in seperate arrays
+                    -> loop each image number, checking each array for info
+                        -> if status is active add to Flyers using url
+                        -> set doneDownloading to true
+
+
+                        Later: if UID matches image UID for each image, display delete button
+                               Display optional info somehow
+    
+    -> upload flyer
+        -> fetch numFlyers
+            -> add to database as numFlyers + 1
+            -> status: active, all other info
+            -> numFlyers++ 
+        -> call download process but only for that image
+
+    
 
