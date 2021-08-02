@@ -53,7 +53,12 @@ export default function Board({ navigation }) { //add {navigation, route} in the
 
   
   //#region back-end
-  /*
+  
+
+
+
+
+/*
   // useEffect to upload all flyer data
   useEffect(() => {
     if (!doneDownloading) {
@@ -82,6 +87,13 @@ export default function Board({ navigation }) { //add {navigation, route} in the
     }
   }, [flyers]); // runs if Flyers updates
  
+
+
+
+
+
+
+
   // useEffect to download all flyer data on initial render
   useEffect(() => {
     setFlyers([]);
@@ -112,12 +124,47 @@ export default function Board({ navigation }) { //add {navigation, route} in the
  
     })();
   }, []); // empty array dependency means it only runs on initial render
+
+
+
+
 */
+
+
+
 
 function beginUpload(){
   // start to upload the flyer based on the uri and metadata
   // you have org, contact, date, and flyerUri variables
+
+  // upload image
+
+  firebase.database().ref("numFlyers").once('value').then(querySnapShot => {
+    
+    const numFlyers = Number(querySnapShot.val())
+    const newNumFlyers = numFlyers + 1;
+    var ref = firebase.storage().ref().child(newNumFlyers.toString());
+
+    fetch(flyerUri).then(response => {
+      response.blob().then(blob => {
+        ref.put(blob).then(data => {
+          data.ref.getDownloadURL().then(downloadURL => {
+            firebase.database().ref(newNumFlyers).set({
+              status: 'active',
+              url: downloadURL,
+              uid: firebase.auth().currentUser.uid
+            });
+            firebase.database().ref("numFlyers").set(newNumFlyers.toString());
+          });
+        });
+      });
+    });
+  
+    
+  });
+
 }
+
 
 
   // request camera roll permissions on initial render
