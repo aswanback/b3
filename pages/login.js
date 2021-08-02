@@ -62,6 +62,7 @@ export default function Login({ navigation }) {
           label='Email'
           mode='outlined'
           onChangeText={onChangeEmail}
+          autoCapitalize='none'
           value={emailText}
           autoCompleteType='email'
           theme={theme}
@@ -75,6 +76,7 @@ export default function Login({ navigation }) {
           label='Password'
           mode='outlined'
           theme={theme}
+          autoCapitalize='none'
           onChangeText={onChangePassword}
           value={passwordText}
           secureTextEntry={true}

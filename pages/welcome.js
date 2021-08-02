@@ -21,12 +21,12 @@ import "firebase/storage";
 
 export default function Welcome({ navigation }) {
   return (
-    <ImageBackground source={require('../assets/Bulletin_bg.png')} style={styles.bkgd}>
+    <ImageBackground source={require('../assets/Bulletin_spash2.png')} style={styles.bkgd}>
       <View style={{ flex: 2 }} />
 
-      <Image source={require('../assets/Bulletin_text_white.png')} resizeMode='contain' style={styles.bulletin_image} />
+     {/* <Image source={require('../assets/Bulletin_text_white.png')} resizeMode='contain' style={styles.bulletin_image} />*/}
 
-      <View style={{ flex: 3.5 }} />
+      <View style={{ flex: 4.5 }} />
 
       <View style={{ flex: 0 }}>
         <TouchableOpacity onPress={() => navigation.navigate('login')}>
@@ -40,7 +40,7 @@ export default function Welcome({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      <View style={{ height: 20 }} />
+      <View style={{ flex: 0.2 }} />
 
       <View style={{ flex: 0 }}>
         <TouchableOpacity onPress={() => navigation.navigate('createAccount')}>
@@ -54,7 +54,7 @@ export default function Welcome({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      <View style={{ flex: 0.5 }} />
+      <View style={{ flex: 1 }} />
 
     </ImageBackground>
   );

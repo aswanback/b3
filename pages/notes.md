@@ -13,8 +13,7 @@
 • Gallery mode
 • Metadata filtering
 • reject blank password so doesnt go thru to firebase
-• 
-• get rid of spaces
+• forgot password on login
 * swag
 
 ### Needs fixed

@@ -10,9 +10,10 @@ export const windowHeight = Dimensions.get('window').height;
 // This is some cancer for the InputText, it sorta works but its annoying, just let me change the colors at this point prolly
 export const theme = {
     ...DefaultTheme,
+    fontSize: 60,
     colors: {
         ...DefaultTheme.colors,
-        primary:'black',
+        primary:'grey',
         secondary: 'red', 
     }
 }
@@ -33,6 +34,8 @@ EStyleSheet.build({
 
 
 export const styles = EStyleSheet.create({ // getting a delay in background showing which isn't ideal
+    
+    //#region Welcome
     bkgd: {
         width: '100%',
         height: '100%',
@@ -42,10 +45,31 @@ export const styles = EStyleSheet.create({ // getting a delay in background show
         flex:1
     },
     bulletin_image: {
-        height: '20%',
+        width: '60%',
         resizeMode: 'contain',
         flexShrink: 1,
     },
+    button: {
+        elevation: 1,
+        justifyContent: 'center',
+        flexDirection: 'row',
+        borderRadius: '2.5rem',
+        borderColor: '$button_border_c',
+        borderWidth: '0.1rem',
+        paddingVertical: '1.2rem',
+        alignSelf: 'center',
+        width: windowWidth * 0.65
+    },
+
+    button_text: {
+        color: 'white',
+        fontSize: '2.4rem',
+        alignSelf: 'center',
+    },
+    //#endregion
+
+
+
     appbar: {
         width: '100%',
         backgroundColor: '$appbar_c',
@@ -65,24 +89,7 @@ export const styles = EStyleSheet.create({ // getting a delay in background show
         marginLeft: '3rem',
     },
 
-    button: {
-        elevation: 1,
-        justifyContent: 'center',
-        flexDirection: 'column',
-        borderRadius: '2.5rem',
-        borderColor: '$button_border_c',
-        borderWidth: '0.1rem',
-        paddingHorizontal: '3.5rem',
-        paddingVertical: '1.5rem',
-        width: '65%',
-        alignSelf: 'center'
-    },
-
-    button_text: {
-        color: 'white',
-        fontSize: '2.4rem',
-        alignSelf: 'center',
-    },
+    
 
     icon_top: {
         paddingTop: '1rem',

@@ -12,6 +12,7 @@ import "firebase/storage";
 import { AuthContext } from './auth.js';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { UploadModal } from './upload';
+import { __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED } from 'react/cjs/react.production.min';
 
 /*
    function foo() {} is same as const foo = () => {} just fyi 
@@ -188,13 +189,13 @@ function beginUpload(){
     <ImageBackground source={require('../assets/Bulletin_bg.png')} style={{ flex: 1, resizeMode: 'cover' }}>
       {/* Top Appbar */}
       <Appbar.Header style={[styles.appbar, { height: 55 }]}>
-        <Pressable onPress={signOut}>
+        <Pressable onPress={__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED}>
           {({ pressed }) => (<Icon name={pressed ? 'account-outline' : 'account'} size={30} style={styles.icon_top} />)}
         </Pressable>
         <View style={{ flex: 1, flexDirection: 'row', paddingHorizontal: 75 }}>
           <Image source={require('../assets/Bulletin_text_blue.png')} style={{ resizeMode: 'contain', flexShrink: 1 }} />
         </View>
-        <Pressable onPress={null}>
+        <Pressable onPress={signOut}>
           {({ pressed }) => (<Icon name={pressed ? 'filter-menu-outline' : 'filter-menu'} size={30} style={styles.icon_top} />)}
         </Pressable>
       </Appbar.Header>

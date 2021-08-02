@@ -11,6 +11,7 @@ import Login from './pages/login';
 import Welcome from './pages/welcome';
 import CreateAccount from './pages/createAccount';
 import Board from './pages/board';
+import Settings from './pages/settings';
 import {Provider as PaperProvider} from 'react-native-paper';
 import {styles, theme} from './styles';
 
@@ -170,6 +171,7 @@ export default function App({navigation}) {
             {authState.auth ? (     // User is signed in - can only access below screens
               <>
                 <Stack.Screen name="board" component={Board} headerMode='none' options={{animationTypeForReplace: authState.entering ? 'pop' : 'push'}}/>
+                <Stack.Screen name='settings' component={Settings} headerMode='none' />
               </>
             ) : (                   // User is signed out - can only access below screens
               <>
