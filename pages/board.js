@@ -50,88 +50,59 @@ export default function Board({ navigation }) { //add {navigation, route} in the
   const [date, setDate] = useState(new Date());
   const [contact, setContact] = useState('init_contact');
   const [flyerUri, setFlyerUri] = useState('init_uri');
+
+  const [downloadedFlyers, addToDownloadedFlyers] = useState([])
+  const [statuses, addToStatuses] = useState([])
+  const [uids, addToUIDs] = useState([])
   
 
   
   //#region back-end
-  
-
-
-
-
-/*
-  // useEffect to upload all flyer data
-  useEffect(() => {
-    if (!doneDownloading) {
-      console.log("not done downloading!")
-      return
-    }
-    console.log("uploading flyer")
- 
-    // set number of flyers
-    firebase.database().ref("numFlyers").set(flyers.length); ///// MUST BE UPDATED: uses local flyers.length, will lead to problems with concurrent users (two users each uploading image 567 from their end for example)
- 
-    if (flyers.length > 0) {
-      const flyer = flyers[flyers.length - 1]; // most recent flyer
-      (async () => {
-        // upload image
-        const response = await fetch(flyer.uri);
-        const blob = await response.blob();
-        var ref = firebase.storage().ref().child(flyers.length.toString());
-        ref.put(blob).then(data => {
-          data.ref.getDownloadURL().then(downloadURL => {
-            console.log(downloadURL + "from upload process")
-            firebase.database().ref(flyers.length).set(downloadURL);
-          })
-        });
-      })();
-    }
-  }, [flyers]); // runs if Flyers updates
- 
-
-
-
-
-
 
 
   // useEffect to download all flyer data on initial render
   useEffect(() => {
+    
     setFlyers([]);
-    // get number of flyers
-    (async () => {
- 
-      console.log("downloading flyer")
-      firebase.database().ref("numFlyers").once('value').then(querySnapShot => {
- 
-        const numFlyersInDatabase = querySnapShot.val()
-        if (numFlyersInDatabase == 0) {
-          console.log("changing download status")
-          setDownloadStatus(true)
-        }
-        else {
-          for (let i = 1; i <= numFlyersInDatabase; i++) {
-            firebase.database().ref(i).once('value').then(querySnapShot2 => {
-              console.log(querySnapShot2.val())
-              setFlyers(Flyers => [...Flyers, { uri: querySnapShot2.val() }]);
-              if (i == numFlyersInDatabase) {
-                setDownloadStatus(true);
+    addToDownloadedFlyers([]);
+    addToStatuses([]);
+    addToUIDs([]);
+    
+    firebase.database().ref("numFlyers").once('value').then(querySnapShot => {
+
+      const numFlyersInDatabase = Number(querySnapShot.val())
+      
+      for (let i = 1; i <= numFlyersInDatabase; i++) {
+        
+        firebase.database().ref(i).child('url').once('value').then(url => {
+          addToDownloadedFlyers(downloadedFlyers => [...downloadedFlyers, { uri: url.val() }]);
+
+          firebase.database().ref(i).child('status').once('value').then(status => {
+            addToStatuses(statuses => [...statuses, status.val()]);
+            if (status.val() == "active") {
+              setFlyers(Flyers => [...Flyers, { uri: url.val() }]);
+            }
+
+            firebase.database().ref(i).child('uid').once('value').then(uid => {
+              addToUIDs(uids => [...uids, uid.val()]);
+              if (i == numFlyersInDatabase) { // we're done
+                console.log(downloadedFlyers)
+                console.log(statuses)
+                console.log(uids)
+                console.log(flyers)
+
+                setDownloadStatus(true)
               }
             });
-          }
-        }
+          });
+        });
+
+      }
+    
+    });
  
-      });
- 
-    })();
+    
   }, []); // empty array dependency means it only runs on initial render
-
-
-
-
-*/
-
-
 
 
 function beginUpload(){
@@ -140,11 +111,21 @@ function beginUpload(){
 
   // upload image
 
+  if (doneDownloading == false) {
+    console.log("not done downloading")
+    return
+  }
+
   firebase.database().ref("numFlyers").once('value').then(querySnapShot => {
     
     const numFlyers = Number(querySnapShot.val())
     const newNumFlyers = numFlyers + 1;
     var ref = firebase.storage().ref().child(newNumFlyers.toString());
+
+    addToDownloadedFlyers(downloadedFlyers => [...downloadedFlyers, { uri: flyerUri }]);
+    setFlyers(Flyers => [...Flyers, { uri: flyerUri }]);
+    addToUIDs(uids => [...uids, firebase.auth().currentUser.uid]);
+    addToStatuses(statuses => [...statuses, "active"]);
 
     fetch(flyerUri).then(response => {
       response.blob().then(blob => {
@@ -154,8 +135,11 @@ function beginUpload(){
               status: 'active',
               url: downloadURL,
               uid: firebase.auth().currentUser.uid
+            }).then(() => {
+              firebase.database().ref("numFlyers").set(newNumFlyers.toString()).then(() => {
+                // done doing stuff, maybe have to do a doneUploading -> true here idk
+              });
             });
-            firebase.database().ref("numFlyers").set(newNumFlyers.toString());
           });
         });
       });
@@ -201,7 +185,7 @@ function beginUpload(){
       </Appbar.Header>
 
 
-      {/*
+      
         <FlatList
           data={flyers} // array of image sources, not the images themselves
           numColumns={2}
@@ -219,7 +203,7 @@ function beginUpload(){
           }}
           keyExtractor={(item, index) => index.toString()}
         />
-        */}
+       
 
       {/* placeholder - this makes the bottom appbar stay at bottom, you can probably leave it here even with flatlist, idk */}
       <View style={{ flex: 1 }} />
