@@ -53,25 +53,24 @@ export default function Board({ navigation }) { //add {navigation, route} in the
 
   const [urls, addToURLs] = useState([])
   const [uids, addToUIDs] = useState([])
+  const [realNumbers, setRealNumbers] = useState([]) // IMPORTANT
+  // In Flyers, we only have the not deleted flyers, which throws off the index compared to its
+  // actual image # in the database. This array will keep the actual image # of each flyer
   
 
   
   //#region back-end
 
-  const [testArray, setTestArray] = useState([1,2,3,4,5])
   // useEffect to download all flyer data on initial render
   useEffect(() => {
     downloadFlyers()
-
-
   }, []); // empty array dependency means it only runs on initial render
-
-
 
   function downloadFlyers() {
     setFlyers([]);
     addToUIDs([]);
     addToURLs([]);
+    setRealNumbers([]);
     
     firebase.database().ref("numFlyers").once('value').then(querySnapShot => {
 
@@ -87,16 +86,18 @@ export default function Board({ navigation }) { //add {navigation, route} in the
               if (status.val() == "active") { 
                 // and user hasn't deleted account, and any other filters
                 // might need a slightly different function that we call for each filter
-                setFlyers(Flyers => [...Flyers, { uri: url.val() }]);
+                setFlyers(flyers => [...flyers, { uri: url.val() }]);
                 addToUIDs(uids => [...uids, uid.val()]);
                 addToURLs(urls => [...urls, url.val()])
+                setRealNumbers(realNumbers => [...realNumbers, i]); 
+                /////// starts at 1!!! local index may not match
               }
 
 
               if (i == numFlyersInDatabase) { // we're done
-                console.log(uids)
-                console.log(urls)
-                console.log(flyers)
+                //console.log(uids)
+                //console.log(urls)
+                //console.log(flyers)
 
                 setDownloadStatus(true)
               }
@@ -127,10 +128,9 @@ export default function Board({ navigation }) { //add {navigation, route} in the
       const newNumFlyers = numFlyers + 1;
       var ref = firebase.storage().ref().child(newNumFlyers.toString());
 
-      addToDownloadedFlyers(downloadedFlyers => [...downloadedFlyers, { uri: flyerUri }]);
-      setFlyers(Flyers => [...Flyers, { uri: flyerUri }]);
+      setFlyers(flyers => [...flyers, { uri: flyerUri }]);
       addToUIDs(uids => [...uids, firebase.auth().currentUser.uid]);
-      addToStatuses(statuses => [...statuses, "active"]);
+      setRealNumbers(realNumbers => [...realNumbers, newNumFlyers]); 
 
       fetch(flyerUri).then(response => {
         response.blob().then(blob => {
@@ -142,6 +142,9 @@ export default function Board({ navigation }) { //add {navigation, route} in the
                 uid: firebase.auth().currentUser.uid
               }).then(() => {
                 firebase.database().ref("numFlyers").set(newNumFlyers.toString()).then(() => {
+
+                  addToURLs(urls => [...urls, downloadURL])
+
                   // done doing stuff, maybe have to do a doneUploading -> true here idk
                 });
               });
@@ -155,14 +158,15 @@ export default function Board({ navigation }) { //add {navigation, route} in the
 
   }
 
-  function deleteFlyer(indexOfFlyer) {
+  function deleteFlyer(indexOfFlyer) { // this code is actually much harder than i thought it would be
     // given: index in Flyers
 
     // part 1 - remove from Flyers
-    setTestArray(testArray => [...testArray.slice(0,indexOfFlyer), ...testArray.slice(indexOfFlyer + 1)])
+    setFlyers(Flyers => [...Flyers.slice(0,indexOfFlyer), ...Flyers.slice(indexOfFlyer + 1)])
    
-
     // part 2 - set status to deleted
+    const realIndex = realNumbers(indexOfFlyer)
+    firebase.database().ref(realIndex).set({status: 'deleted'})
 
   }
 
