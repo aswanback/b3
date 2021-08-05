@@ -51,22 +51,27 @@ export default function Board({ navigation }) { //add {navigation, route} in the
   const [contact, setContact] = useState('init_contact');
   const [flyerUri, setFlyerUri] = useState('init_uri');
 
-  const [downloadedFlyers, addToDownloadedFlyers] = useState([])
-  const [statuses, addToStatuses] = useState([])
+  const [urls, addToURLs] = useState([])
   const [uids, addToUIDs] = useState([])
   
 
   
   //#region back-end
 
-
+  const [testArray, setTestArray] = useState([1,2,3,4,5])
   // useEffect to download all flyer data on initial render
   useEffect(() => {
-    
+    downloadFlyers()
+
+
+  }, []); // empty array dependency means it only runs on initial render
+
+
+
+  function downloadFlyers() {
     setFlyers([]);
-    addToDownloadedFlyers([]);
-    addToStatuses([]);
     addToUIDs([]);
+    addToURLs([]);
     
     firebase.database().ref("numFlyers").once('value').then(querySnapShot => {
 
@@ -74,21 +79,23 @@ export default function Board({ navigation }) { //add {navigation, route} in the
       
       for (let i = 1; i <= numFlyersInDatabase; i++) {
         
-        firebase.database().ref(i).child('url').once('value').then(url => {
-          addToDownloadedFlyers(downloadedFlyers => [...downloadedFlyers, { uri: url.val() }]);
-
-          firebase.database().ref(i).child('status').once('value').then(status => {
-            addToStatuses(statuses => [...statuses, status.val()]);
-            if (status.val() == "active") {
-              setFlyers(Flyers => [...Flyers, { uri: url.val() }]);
-            }
-
+        firebase.database().ref(i).child('status').once('value').then(status => {
+          firebase.database().ref(i).child('url').once('value').then(url => {
             firebase.database().ref(i).child('uid').once('value').then(uid => {
-              addToUIDs(uids => [...uids, uid.val()]);
+              
+              
+              if (status.val() == "active") { 
+                // and user hasn't deleted account, and any other filters
+                // might need a slightly different function that we call for each filter
+                setFlyers(Flyers => [...Flyers, { uri: url.val() }]);
+                addToUIDs(uids => [...uids, uid.val()]);
+                addToURLs(urls => [...urls, url.val()])
+              }
+
+
               if (i == numFlyersInDatabase) { // we're done
-                console.log(downloadedFlyers)
-                console.log(statuses)
                 console.log(uids)
+                console.log(urls)
                 console.log(flyers)
 
                 setDownloadStatus(true)
@@ -100,56 +107,64 @@ export default function Board({ navigation }) { //add {navigation, route} in the
       }
     
     });
- 
     
-  }, []); // empty array dependency means it only runs on initial render
-
-
-function beginUpload(){
-  // start to upload the flyer based on the uri and metadata
-  // you have org, contact, date, and flyerUri variables
-
-  // upload image
-
-  if (doneDownloading == false) {
-    console.log("not done downloading")
-    return
   }
 
-  firebase.database().ref("numFlyers").once('value').then(querySnapShot => {
-    
-    const numFlyers = Number(querySnapShot.val())
-    const newNumFlyers = numFlyers + 1;
-    var ref = firebase.storage().ref().child(newNumFlyers.toString());
+  function beginUpload(){
+    // start to upload the flyer based on the uri and metadata
+    // you have org, contact, date, and flyerUri variables
 
-    addToDownloadedFlyers(downloadedFlyers => [...downloadedFlyers, { uri: flyerUri }]);
-    setFlyers(Flyers => [...Flyers, { uri: flyerUri }]);
-    addToUIDs(uids => [...uids, firebase.auth().currentUser.uid]);
-    addToStatuses(statuses => [...statuses, "active"]);
+    // upload image
 
-    fetch(flyerUri).then(response => {
-      response.blob().then(blob => {
-        ref.put(blob).then(data => {
-          data.ref.getDownloadURL().then(downloadURL => {
-            firebase.database().ref(newNumFlyers).set({
-              status: 'active',
-              url: downloadURL,
-              uid: firebase.auth().currentUser.uid
-            }).then(() => {
-              firebase.database().ref("numFlyers").set(newNumFlyers.toString()).then(() => {
-                // done doing stuff, maybe have to do a doneUploading -> true here idk
+    if (doneDownloading == false) {
+      console.log("not done downloading")
+      return
+    }
+
+    firebase.database().ref("numFlyers").once('value').then(querySnapShot => {
+      
+      const numFlyers = Number(querySnapShot.val())
+      const newNumFlyers = numFlyers + 1;
+      var ref = firebase.storage().ref().child(newNumFlyers.toString());
+
+      addToDownloadedFlyers(downloadedFlyers => [...downloadedFlyers, { uri: flyerUri }]);
+      setFlyers(Flyers => [...Flyers, { uri: flyerUri }]);
+      addToUIDs(uids => [...uids, firebase.auth().currentUser.uid]);
+      addToStatuses(statuses => [...statuses, "active"]);
+
+      fetch(flyerUri).then(response => {
+        response.blob().then(blob => {
+          ref.put(blob).then(data => {
+            data.ref.getDownloadURL().then(downloadURL => {
+              firebase.database().ref(newNumFlyers).set({
+                status: 'active',
+                url: downloadURL,
+                uid: firebase.auth().currentUser.uid
+              }).then(() => {
+                firebase.database().ref("numFlyers").set(newNumFlyers.toString()).then(() => {
+                  // done doing stuff, maybe have to do a doneUploading -> true here idk
+                });
               });
             });
           });
         });
       });
-    });
-  
     
-  });
+      
+    });
 
-}
+  }
 
+  function deleteFlyer(indexOfFlyer) {
+    // given: index in Flyers
+
+    // part 1 - remove from Flyers
+    setTestArray(testArray => [...testArray.slice(0,indexOfFlyer), ...testArray.slice(indexOfFlyer + 1)])
+   
+
+    // part 2 - set status to deleted
+
+  }
 
 
   // request camera roll permissions on initial render
