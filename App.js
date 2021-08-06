@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { ImageBackground,View } from 'react-native';
+import { ImageBackground, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { AuthContext, CustContext } from './pages/auth';
@@ -12,8 +12,10 @@ import Welcome from './pages/welcome';
 import CreateAccount from './pages/createAccount';
 import Board from './pages/board';
 import Settings from './pages/settings';
-import {Provider as PaperProvider} from 'react-native-paper';
-import {styles, theme} from './styles';
+import ForgotPassword from './pages/forgotpassword';
+import Filters from './pages/filters';
+import { Provider as PaperProvider } from 'react-native-paper';
+import { styles, theme } from './styles';
 
 /* 
  Alright dipshit here's your guide to the code
@@ -72,7 +74,7 @@ if (!firebase.apps.length) {
 
 const Stack = createStackNavigator();
 
-export default function App({navigation}) {
+export default function App({ navigation }) {
 
   //#region auth stuff - auth states, login/logout/signup, remember me firebase
   // sets up different auth states for transitioning through app
@@ -83,14 +85,15 @@ export default function App({navigation}) {
         verify: action.verify,
         wrong: action.wrong,
         entering: action.entering
-      }},
-      {
-        // default values
-        auth: false,
-        verify: false,
-        wrong: false,
-        entering: true, 
       }
+    },
+    {
+      // default values
+      auth: false,
+      verify: false,
+      wrong: false,
+      entering: true,
+    }
   );
 
   // This is the backend auth functions - signIn, signUp, logout, delete account (coming soon)
@@ -105,7 +108,7 @@ export default function App({navigation}) {
               dispatch({ auth: true })
               console.log('logged in')
             } else {
-              dispatch({ auth:false, verify: true })
+              dispatch({ auth: false, verify: true })
               console.log("credentials good but verify email")
             }
           })
@@ -118,27 +121,27 @@ export default function App({navigation}) {
       signOut: () => {
         firebase.auth().signOut().then(() => {
           console.log('sign out successful')
-          dispatch({ auth:false, entering: false })
+          dispatch({ auth: false, entering: false })
         })
-        .catch((e) => {console.log('error signing out')});
+          .catch((e) => { console.log('error signing out') });
       },
 
       signUp: async (email, password, emailError, passwordError) => {
-        if(emailError || passwordError){
+        if (emailError || passwordError) {
           console.log('email or password bad')
           return;
         } else {
           firebase.auth().createUserWithEmailAndPassword(email, password)
             .then((userCredential) => {   // Signed in 
               var user = userCredential.user;
-              firebase.auth().currentUser.sendEmailVerification().then(() => {console.log("email sent")})
+              firebase.auth().currentUser.sendEmailVerification().then(() => { console.log("email sent") })
                 .catch((e) => { console.log('error ' + e.code + ' ' + e.message) });
               console.log(user) // contains a bunch of information that will probably be relevant, particularly UID
             })
             .then(() => { //log out
-              firebase.auth().signOut().then(() => { 
+              firebase.auth().signOut().then(() => {
                 navigation.navigate("login")
-                dispatch({auth:false,entering:false})
+                dispatch({ auth: false, entering: false })
               })
                 .catch((e) => { console.log('sign out error ' + e.code + ' ' + e.message); });
             })
@@ -147,9 +150,36 @@ export default function App({navigation}) {
       },
 
       deleteAccount: async () => {
+        console.log('account deletion here')
         //fill code in here to delete your account
-        dispatch({auth:false, entering:false})
-      }
+
+        // below code will kick them back to welcome screen
+        //dispatch({auth:false, entering:false})
+      },
+      changePassword: async () => {
+        console.log('change my password here')
+
+        // below code will kick them back to welcome screen
+        //dispatch({auth:false, entering:false})
+      },
+
+
+
+      // Filters
+      filter1: () => {
+        console.log('filter 1')
+      },
+      filter2: () => {
+        console.log('filter 2')
+      },
+      filter3: () => {
+        console.log('filter 3')
+      },
+      filter4: () => {
+        console.log('filter 4')
+      },
+
+
     }),
     []
   );
@@ -158,34 +188,36 @@ export default function App({navigation}) {
   const custContext = [authState, dispatch];
 
   // Remember me functionality - this has some issue with unmounted component
-  //useEffect(() => { firebase.auth().onAuthStateChanged((user) => { dispatch({ auth: user ? true : false }) }); }, []);
+  useEffect(() => { firebase.auth().onAuthStateChanged((user) => { dispatch({ auth: user ? true : false }) }); }, []);
   //#endregion
 
   //#region Navigation
   return (
     <CustContext.Provider value={custContext}>
       <AuthContext.Provider value={authContext} >
-      <PaperProvider theme={theme}>
-      <NavigationContainer >
-          <Stack.Navigator headerMode='none'>
-            {authState.auth ? (     // User is signed in - can only access below screens
-              <>
-                <Stack.Screen name="board" component={Board} headerMode='none' options={{animationTypeForReplace: authState.entering ? 'pop' : 'push'}}/>
-                <Stack.Screen name='settings' component={Settings} headerMode='none' />
-              </>
-            ) : (                   // User is signed out - can only access below screens
-              <>
-                <Stack.Screen name="welcome" component={Welcome} headerMode='none' />
-                <Stack.Screen name="login" component={Login} headerMode='none' />
-                <Stack.Screen name="createAccount" component={CreateAccount} headerMode='none' />
-              </>
-            )} 
-          </Stack.Navigator>
-        </NavigationContainer>
+        <PaperProvider theme={theme}>
+          <NavigationContainer >
+            <Stack.Navigator screenOptions={{ headerShown: false, presentation: 'transparentModal' }}>
+              {authState.auth ? (     // User is signed in - can only access below screens
+                <>
+                  <Stack.Screen name="board" component={Board} headerMode='none' options={{ animationTypeForReplace: authState.entering ? 'pop' : 'push' }} />
+                  <Stack.Screen name="settings" component={Settings} options={{ backgroundColor: 'transparent', animationTypeForReplace: 'pop', animationEnabled: true }} />
+                  <Stack.Screen name="filters" component={Filters} options={{ backgroundColor: 'transparent', animationTypeForReplace: 'pop', animationEnabled: true }} />
+                </>
+              ) : (                   // User is signed out - can only access below screens
+                <>
+                  <Stack.Screen name="welcome" component={Welcome} headerMode='none' />
+                  <Stack.Screen name="login" component={Login} headerMode='none' />
+                  <Stack.Screen name="createAccount" component={CreateAccount} headerMode='none' />
+                  <Stack.Screen name="forgotPassword" component={ForgotPassword} headerMode='none' />
+                </>
+              )}
+            </Stack.Navigator>
+          </NavigationContainer>
         </PaperProvider>
       </AuthContext.Provider>
     </CustContext.Provider>
-    
+
 
   );
   //#endregion

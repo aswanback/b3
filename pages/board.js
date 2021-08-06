@@ -12,7 +12,7 @@ import "firebase/storage";
 import { AuthContext } from './auth.js';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { UploadModal } from './upload';
-import { __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED } from 'react/cjs/react.production.min';
+import { PopupScreen } from './popup.js';
 
 /*
    function foo() {} is same as const foo = () => {} just fyi 
@@ -45,6 +45,8 @@ export default function Board({ navigation }) { //add {navigation, route} in the
   const [flyers, setFlyers] = useState([]);
   const [doneDownloading, setDownloadStatus] = useState(false);
   const [modalVis, setModalVis] = useState(false);
+  const [popupVis, setPopupVis] = useState(false);
+  const [popupItem, setPopupItem] = useState('');
 
   const [org, setOrg] = useState('init_org');
   const [date, setDate] = useState(new Date());
@@ -56,9 +58,9 @@ export default function Board({ navigation }) { //add {navigation, route} in the
   const [realNumbers, setRealNumbers] = useState([]) // IMPORTANT
   // In Flyers, we only have the not deleted flyers, which throws off the index compared to its
   // actual image # in the database. This array will keep the actual image # of each flyer
-  
 
-  
+
+
   //#region back-end
 
   // useEffect to download all flyer data on initial render
@@ -71,25 +73,25 @@ export default function Board({ navigation }) { //add {navigation, route} in the
     addToUIDs([]);
     addToURLs([]);
     setRealNumbers([]);
-    
+
     firebase.database().ref("numFlyers").once('value').then(querySnapShot => {
 
       const numFlyersInDatabase = Number(querySnapShot.val())
-      
+
       for (let i = 1; i <= numFlyersInDatabase; i++) {
-        
+
         firebase.database().ref(i).child('status').once('value').then(status => {
           firebase.database().ref(i).child('url').once('value').then(url => {
             firebase.database().ref(i).child('uid').once('value').then(uid => {
-              
-              
-              if (status.val() == "active") { 
+
+
+              if (status.val() == "active") {
                 // and user hasn't deleted account, and any other filters
                 // might need a slightly different function that we call for each filter
                 setFlyers(flyers => [...flyers, { uri: url.val() }]);
                 addToUIDs(uids => [...uids, uid.val()]);
                 addToURLs(urls => [...urls, url.val()])
-                setRealNumbers(realNumbers => [...realNumbers, i]); 
+                setRealNumbers(realNumbers => [...realNumbers, i]);
                 /////// starts at 1!!! local index may not match
               }
 
@@ -106,12 +108,12 @@ export default function Board({ navigation }) { //add {navigation, route} in the
         });
 
       }
-    
+
     });
-    
+
   }
 
-  function beginUpload(){
+  function beginUpload() {
     // start to upload the flyer based on the uri and metadata
     // you have org, contact, date, and flyerUri variables
 
@@ -123,14 +125,14 @@ export default function Board({ navigation }) { //add {navigation, route} in the
     }
 
     firebase.database().ref("numFlyers").once('value').then(querySnapShot => {
-      
+
       const numFlyers = Number(querySnapShot.val())
       const newNumFlyers = numFlyers + 1;
       var ref = firebase.storage().ref().child(newNumFlyers.toString());
 
       setFlyers(flyers => [...flyers, { uri: flyerUri }]);
       addToUIDs(uids => [...uids, firebase.auth().currentUser.uid]);
-      setRealNumbers(realNumbers => [...realNumbers, newNumFlyers]); 
+      setRealNumbers(realNumbers => [...realNumbers, newNumFlyers]);
 
       fetch(flyerUri).then(response => {
         response.blob().then(blob => {
@@ -152,8 +154,8 @@ export default function Board({ navigation }) { //add {navigation, route} in the
           });
         });
       });
-    
-      
+
+
     });
 
   }
@@ -162,11 +164,11 @@ export default function Board({ navigation }) { //add {navigation, route} in the
     // given: index in Flyers
 
     // part 1 - remove from Flyers
-    setFlyers(Flyers => [...Flyers.slice(0,indexOfFlyer), ...Flyers.slice(indexOfFlyer + 1)])
-   
+    setFlyers(Flyers => [...Flyers.slice(0, indexOfFlyer), ...Flyers.slice(indexOfFlyer + 1)])
+
     // part 2 - set status to deleted
     const realIndex = realNumbers(indexOfFlyer)
-    firebase.database().ref(realIndex).set({status: 'deleted'})
+    firebase.database().ref(realIndex).set({ status: 'deleted' })
 
   }
 
@@ -183,7 +185,7 @@ export default function Board({ navigation }) { //add {navigation, route} in the
     })();
   }, []);
 
-  
+
 
   //#endregion
 
@@ -192,37 +194,45 @@ export default function Board({ navigation }) { //add {navigation, route} in the
     <ImageBackground source={require('../assets/Bulletin_bg.png')} style={{ flex: 1, resizeMode: 'cover' }}>
       {/* Top Appbar */}
       <Appbar.Header style={[styles.appbar, { height: 55 }]}>
-        <Pressable onPress={__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED}>
+        <Pressable onPress={() => navigation.navigate("settings")}>
           {({ pressed }) => (<Icon name={pressed ? 'account-outline' : 'account'} size={30} style={styles.icon_top} />)}
         </Pressable>
         <View style={{ flex: 1, flexDirection: 'row', paddingHorizontal: 75 }}>
           <Image source={require('../assets/Bulletin_text_blue.png')} style={{ resizeMode: 'contain', flexShrink: 1 }} />
         </View>
-        <Pressable onPress={signOut}>
+        <Pressable onPress={() => navigation.navigate('filters')}>
           {({ pressed }) => (<Icon name={pressed ? 'filter-menu-outline' : 'filter-menu'} size={30} style={styles.icon_top} />)}
         </Pressable>
       </Appbar.Header>
 
 
-      
-        <FlatList
-          data={flyers} // array of image sources, not the images themselves
-          numColumns={2}
-          directionalLockEnabled={true}
-          style={{flexDirection: 'row', marginHorizontal:10,}}
-          showsHorizontalScrollIndicator={false}
-          overScrollMode='never'
-          renderItem={({ item }) => {
-            //const [width, setWidth] = useState(200);
-            //const [height, setHeight] = useState(200);
-            //console.log(item.toString);
-            //Image.getSize(item, (width, height) => {setWidth(width), setHeight(height)});
 
-            return (<Image source={item} style={{ width: 200, height: 200, resizeMode: 'contain' }} />);
-          }}
-          keyExtractor={(item, index) => index.toString()}
-        />
-       
+      <FlatList
+        data={flyers} // array of image sources, not the images themselves
+        numColumns={2}
+        directionalLockEnabled={true}
+        style={{ flexDirection: 'row', marginHorizontal: 10, }}
+        showsHorizontalScrollIndicator={false}
+        overScrollMode='never'
+        renderItem={({ item,index }) => {
+          //const [width, setWidth] = useState(200);
+          //const [height, setHeight] = useState(200);
+          //console.log(index.toString());
+          //Image.getSize(item, (width, height) => {setWidth(width), setHeight(height)});
+
+          return (
+            <TouchableOpacity onPress={()=>{setPopupVis(true); setPopupItem(index.toString())}}>
+              <View style={{flexDirection: 'row' }} >
+              <Image source={item} style={{ width: 200, height: 200, resizeMode: 'contain' }} />
+              </View>
+            </TouchableOpacity>            
+          
+          );
+        }}
+        keyExtractor={(item, index) => index.toString()}
+      />
+
+
 
       {/* placeholder - this makes the bottom appbar stay at bottom, you can probably leave it here even with flatlist, idk */}
       <View style={{ flex: 1 }} />
@@ -248,22 +258,40 @@ export default function Board({ navigation }) { //add {navigation, route} in the
       {/* Pop up for upload image - location doesnt matter*/}
       <Modal visible={modalVis} presentationStyle='fullScreen' animationType='slide'>
         {/* Modal header */}
-        <Appbar.Header style={[styles.appbar,{height:50}]}>
-          <View style={{width:70}} >
-          <Button title='Cancel' onPress={() => { setModalVis(false); setOrg(null); setContact(null); setDate(null); setFlyerUri(null); }} />
+        <Appbar.Header style={[styles.appbar, { height: 50 }]}>
+          <View style={{ width: 70 }} >
+            <Button title='Cancel' onPress={() => { setModalVis(false); setOrg(null); setContact(null); setDate(null); setFlyerUri(null); }} />
           </View>
           <View style={{ flex: 1 }} />
-          
+
           <Text style={styles.title}>Upload</Text>
           <View style={{ flex: 1 }} />
-          <View style={{width:70}} >
-          <Button title='Done' onPress={() => { setModalVis(false); beginUpload(); }} />
+          <View style={{ width: 70 }} >
+            <Button title='Done' onPress={() => { setModalVis(false); beginUpload(); }} />
           </View>
         </Appbar.Header>
 
         {/* Content of the modal - upload.js */}
         <UploadModal setOrg={setOrg} setDate={setDate} setContact={setContact} setFlyerUri={setFlyerUri} />
-        
+
+      </Modal>
+
+
+      {/* click on picture modal */}
+      <Modal visible={popupVis} presentationStyle='fullScreen' animationType='slide'>
+        {/* Modal header */}
+        <Appbar.Header style={[styles.appbar, { height: 50 }]}>
+          <View style={{ flex: 1 }} />
+
+          <Text style={styles.title}>Popup</Text>
+          <View style={{ flex: 1 }} />
+          <View style={{ width: 70 }} >
+            <Button title='Done' onPress={() => { setPopupVis(false); }} />
+          </View>
+        </Appbar.Header>
+
+        <PopupScreen popupItem={popupItem}/>
+
       </Modal>
 
     </ImageBackground>

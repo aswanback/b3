@@ -101,6 +101,8 @@ export default function Login({ navigation }) {
         </TouchableOpacity>
       </View>
 
+      <Button title='forgot password' onPress={()=>navigation.navigate('forgotPassword')}/>
+
       <View style={{ height: windowHeight * 0.06 }} />
 
     </ImageBackground>
