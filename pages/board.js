@@ -290,7 +290,7 @@ export default function Board({ navigation }) { //add {navigation, route} in the
           </View>
         </Appbar.Header>
 
-        <PopupScreen popupItem={popupItem}/>
+        <PopupScreen popupItem={popupItem} deleteFlyer={deleteFlyer}/>
 
       </Modal>
 

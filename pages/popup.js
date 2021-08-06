@@ -28,8 +28,25 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 
 
 
-export function PopupScreen(props) {
+export function PopupScreen(props, deleteFlyer) {
+
     const index = props.popupItem;
+
+    function pinFlyer () {
+        console.log('pin')
+        //pin here using index
+    }
+
+    function DeleteButton () {
+        const [avail,setAvail] = useState(false); //use this to set whether button is usable, ill make it pretty later
+
+
+        return(
+            <Button disabled={!avail} title='delete flyer' onPress={()=>deleteFlyer(index)}/>
+        );
+    }
+
+    
 
     // get the other info here i guess
 
@@ -45,12 +62,13 @@ export function PopupScreen(props) {
                     <Text>yee{index}</Text>
                 </View>
 
+                <Button title='pin flyer' onPress={pinFlyer}/>
+
+                <DeleteButton flyer={index}/>
+
                 <View style={{ height: windowHeight * 0.01 }} />
 
-               
-
             </KeyboardAwareScrollView>
-
 
         </View>
     );
