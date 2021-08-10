@@ -21,22 +21,15 @@ import { PopupScreen } from './popup.js';
     • Pressable is all the icons in the Appbar, check that shit out the icons change when you click on them big flex
       the onPress is where it'll route to, rn only upload is linked to uploadModal, and the account one signs you out
       If you implement a delete account, feel free to make it the onPress method of one of the icons since they're all dead rn
-
     • Theres a top and bottom appbar, those are self explanatory
     • The Modal is the upload pop-up, since its a pop-up it doesnt matter where its located in the JSX tree cuz its invisible
-
     • Since Pinned will just be a filter so I'm not doing anything with it
     • I will add a settings page, one that half pops out like Reddit, but later
     • Filter will have a dropdown kind of thing for you to enter filters, I'll add that eventually 
-
-
     • Back end we need metadata so we can do the filtering and shit
     • pickImage has to be accessible from upload.js, which would just be an import statement except a call to setFlyers in it
       that you need means I can't use it elsewhere. Not sure how to resolve this yet. I think that I will have to port the org,
       contact info, and date over to this file, so then I can probably port the uri as well, that's likely the solution.
-
-
-
 */
 
 // Main board page
@@ -65,7 +58,7 @@ export default function Board({ navigation }) { //add {navigation, route} in the
 
   // useEffect to download all flyer data on initial render
   useEffect(() => {
-    downloadFlyers()
+    //downloadFlyers()
   }, []); // empty array dependency means it only runs on initial render
 
   function downloadFlyers() {
@@ -173,6 +166,30 @@ export default function Board({ navigation }) { //add {navigation, route} in the
   }
 
 
+  
+  function deleteAccount(userUID) { 
+
+    firebase.database().ref("numFlyers").once('value').then(querySnapShot => {
+
+      const numFlyersInDatabase = Number(querySnapShot.val())
+
+      for (let i = 1; i <= numFlyersInDatabase; i++) {
+
+        firebase.database().ref(i).child('uid').once('value').then(uid => {
+
+          if (uid.val() == userUID) {
+            firebase.database().ref(newNumFlyers).set({
+              status: 'deleted',
+            })
+          }
+        });
+      }
+    });
+  }
+
+
+
+
   // request camera roll permissions on initial render
   useEffect(() => {
     (async () => {
@@ -226,7 +243,7 @@ export default function Board({ navigation }) { //add {navigation, route} in the
               <Image source={item} style={{ width: 200, height: 200, resizeMode: 'contain' }} />
               </View>
             </TouchableOpacity>            
-          
+
           );
         }}
         keyExtractor={(item, index) => index.toString()}

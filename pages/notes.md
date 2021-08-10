@@ -23,6 +23,7 @@
 • Formatting of FlatList
 - make text boxes for log in have a less black outline. probably just white
 = board page center top logo. idk what to put but obviously it looks stupid as shit rn. maybe just smaller
+{ need to make it so we recognize if someone's making an account with an email already created and throw a message
 
 
 
