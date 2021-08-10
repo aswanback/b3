@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { ImageBackground, View } from 'react-native';
+import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { AuthContext, CustContext } from './pages/auth';
@@ -14,8 +15,6 @@ import Board from './pages/board';
 import Settings from './pages/settings';
 import ForgotPassword from './pages/forgotpassword';
 import Filters from './pages/filters';
-import { Provider as PaperProvider } from 'react-native-paper';
-import { styles, theme } from './styles';
 
 /* 
  Alright dipshit here's your guide to the code
@@ -81,9 +80,11 @@ export default function App({ navigation }) {
   const [authState, dispatch] = React.useReducer(
     (prevState, action) => {
       return {
+        // email needs verification, wrong password, email already in use, 
         auth: action.auth,
         verify: action.verify,
         wrong: action.wrong,
+        email_in_use: action.email_in_use,
         entering: action.entering
       }
     },
@@ -92,6 +93,7 @@ export default function App({ navigation }) {
       auth: false,
       verify: false,
       wrong: false,
+      email_in_use: false,
       entering: true,
     }
   );
@@ -163,7 +165,11 @@ export default function App({ navigation }) {
         //dispatch({auth:false, entering:false})
       },
 
+      // view MyFLyers
+      viewMyFlyers: () => {
+        console.log('view my flyers')
 
+      },
 
       // Filters
       filter1: () => {
@@ -193,28 +199,26 @@ export default function App({ navigation }) {
 
   //#region Navigation
   return (
-    <CustContext.Provider value={custContext}>
+    <CustContext.Provider value={custContext} >
       <AuthContext.Provider value={authContext} >
-        <PaperProvider theme={theme}>
-          <NavigationContainer >
-            <Stack.Navigator screenOptions={{ headerShown: false, presentation: 'transparentModal' }}>
-              {authState.auth ? (     // User is signed in - can only access below screens
-                <>
-                  <Stack.Screen name="board" component={Board} headerMode='none' options={{ animationTypeForReplace: authState.entering ? 'pop' : 'push' }} />
-                  <Stack.Screen name="settings" component={Settings} options={{ backgroundColor: 'transparent', animationTypeForReplace: 'pop', animationEnabled: true }} />
-                  <Stack.Screen name="filters" component={Filters} options={{ backgroundColor: 'transparent', animationTypeForReplace: 'pop', animationEnabled: true }} />
-                </>
-              ) : (                   // User is signed out - can only access below screens
-                <>
-                  <Stack.Screen name="welcome" component={Welcome} headerMode='none' />
-                  <Stack.Screen name="login" component={Login} headerMode='none' />
-                  <Stack.Screen name="createAccount" component={CreateAccount} headerMode='none' />
-                  <Stack.Screen name="forgotPassword" component={ForgotPassword} headerMode='none' />
-                </>
-              )}
-            </Stack.Navigator>
-          </NavigationContainer>
-        </PaperProvider>
+        <NavigationContainer>
+          <Stack.Navigator screenOptions={{ headerShown: false}}>
+            {authState.auth ? (     // User is signed in - can only access below screens
+              <>
+                <Stack.Screen name='board' component={Board}/>
+                <Stack.Screen name='settings' component={Settings} options={{ presentation: 'transparentModal', backgroundColor: 'transparent', animationTypeForReplace: 'push', animationEnabled: true }} />
+                <Stack.Screen name='filters' component={Filters} options={{ backgroundColor: 'transparent', animationTypeForReplace: 'pop', animationEnabled: true }} />
+              </>
+            ) : (                   // User is signed out - can only access below screens
+              <>
+                <Stack.Screen name="welcome" component={Welcome} />
+                <Stack.Screen name="login" component={Login}/>
+                <Stack.Screen name="createAccount" component={CreateAccount}/>
+                <Stack.Screen name="forgotPassword" component={ForgotPassword}/>
+              </>
+            )}
+          </Stack.Navigator>
+        </NavigationContainer>
       </AuthContext.Provider>
     </CustContext.Provider>
 

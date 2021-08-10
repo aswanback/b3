@@ -1,23 +1,9 @@
-import { styles, background, windowWidth } from '../styles.js';
+import { styles, windowWidth } from '../styles.js';
 import 'react-native-gesture-handler';
-import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View, Button, Image, ImageBackground, Platform, FlatList, TextInput, Dimensions, TouchableOpacity, SafeAreaView } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
 import { LinearGradient } from 'expo-linear-gradient';
-import firebase from 'firebase/app';
-import "firebase/auth";
-import "firebase/database";
-import "firebase/storage";
 
-/*
-  Most basic page, literally just a view with two buttons you can figure it out
-
-  Nothing to change here, just looks which I'll do since I'm unfortunately intimately acquainted
-  
-*/
 
 export default function Welcome({ navigation }) {
   return (
@@ -29,28 +15,16 @@ export default function Welcome({ navigation }) {
       <View style={{ flex: 4.5 }} />
 
       <View style={{ flex: 0 }}>
-        <TouchableOpacity onPress={() => navigation.navigate('login')}>
-          <LinearGradient
-            start={[1, 1]}
-            end={[0, 0]}
-            colors={['rgba(255,255,255,0.2)', 'rgba(255,255,255, 0.2)']}
-            style={styles.button}>
-            <Text style={styles.button_text}>Login</Text>
-          </LinearGradient>
+        <TouchableOpacity onPress={() => navigation.navigate('login')} style={styles.button}>
+          <Text style={styles.button_text}>Login</Text>
         </TouchableOpacity>
       </View>
 
       <View style={{ flex: 0.2 }} />
 
       <View style={{ flex: 0 }}>
-        <TouchableOpacity onPress={() => navigation.navigate('createAccount')}>
-          <LinearGradient
-            start={[0, 0]}
-            end={[1, 1]}
-            colors={['rgba(255,255,255,0.2)', 'rgba(255,255,255, 0.2)']}
-            style={styles.button}>
+        <TouchableOpacity onPress={() => navigation.navigate('createAccount')} style={styles.button}>
             <Text style={styles.button_text}>Create account</Text>
-          </LinearGradient>
         </TouchableOpacity>
       </View>
 

@@ -40,7 +40,6 @@ export function PopupScreen(props, deleteFlyer) {
     function DeleteButton () {
         const [avail,setAvail] = useState(false); //use this to set whether button is usable, ill make it pretty later
 
-
         return(
             <Button disabled={!avail} title='delete flyer' onPress={()=>deleteFlyer(index)}/>
         );

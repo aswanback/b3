@@ -1,26 +1,11 @@
 import { styles, windowHeight, windowWidth, theme } from '../styles.js';
 import 'react-native-gesture-handler';
-import { setStatusBarBackgroundColor, StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { StyleSheet, Text, View, Button, Image, ImageBackground, Platform, FlatList, Dimensions, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { HelperText, TextInput } from 'react-native-paper';
-import firebase from 'firebase/app'
-import "firebase/auth";
-import "firebase/database";
-import "firebase/storage";
+import { HelperText, TextInput, IconButton } from 'react-native-paper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { AuthContext, CustContext } from './auth.js';
-
-/*
-  Purdue email and password strength verification here, see if pass and confirmPass match
-  heavy lifting done in App.js with signUp
-  more provider shit needed probably, in progress
-  back end on your side shouldnt be a problem here - nothing needed
-
-  I dont think you have anything to change in this file
-
-*/
 
 
 
@@ -37,28 +22,37 @@ export default function CreateAccount({ navigation }) {
 
   //#region back-end
 
-  const [errorMsg,setErrorMsg] = useState(null);
+  const [errorMsg, setErrorMsg] = useState(null);
 
-  // see if email has @purdue.edu
-  function emailError() {
-    return (emailText !== null && emailText.trim() !== null && !emailText.trim().includes('@purdue.edu'));
+
+  function emailErrorMsg() {
+    const [txt, setTxt] = useState(null)
+    if (emailText !== null && emailText.trim() !== null) {
+      if (authState.email_in_use) {
+        setTxt('That email is already being used in an account')
+      }
+      if (!emailText.trim().includes('@purdue.edu')) {
+        setTxt('Invalid email. Only accepting @purdue.edu emails at this time')
+      }
+    }
+    return txt;
   }
-  
+
   // password match confirmPassword, password length requirement, we can add others if really needed
   function passwordError() {
-    const [status,setStatus] = useState(false);
-    useEffect(()=>{
-    if (passwordText!==null && !(passwordText.length >= 8)){
-      setErrorMsg('Password must be at least 8 characters.');
-      setStatus(true);
-    } else if (passwordText !== null && confirmPasswordText !== null && passwordText !== confirmPasswordText) {
-      setErrorMsg("Passwords don't match.");
-      setStatus(true);
-    } else {
-      setStatus(false);
-    }
-  },[passwordText,confirmPasswordText]);
-  return status;
+    const [status, setStatus] = useState(false);
+    useEffect(() => {
+      if (passwordText !== null && !(passwordText.length >= 8)) {
+        setErrorMsg('Password must be at least 8 characters.');
+        setStatus(true);
+      } else if (passwordText !== null && confirmPasswordText !== null && passwordText !== confirmPasswordText) {
+        setErrorMsg("Passwords don't match.");
+        setStatus(true);
+      } else {
+        setStatus(false);
+      }
+    }, [passwordText, confirmPasswordText]);
+    return status;
   }
 
   //#endregion
@@ -68,10 +62,15 @@ export default function CreateAccount({ navigation }) {
   return (
     <ImageBackground source={require('../assets/Bulletin_bg.png')} resizeMode='cover' style={styles.bkgd}>
       <KeyboardAwareScrollView style={{ flex: 0, width: windowWidth, alignContent: 'center' }} resetScrollToCoords={{ x: 0, y: 0 }} enableAutomaticScroll={true} scrollEnabled={false}>
-        <View style={{ height: windowHeight * 0.12 }} />
 
-        <View style={{ height: 200, alignSelf: 'center', }}>
-          <Image style={{ flex: 1, flexShrink: 1, resizeMode: 'contain' }} source={require('../assets/B_icon.png')} />
+        <View style={{ height: windowHeight * 0.05 }} />
+
+        <IconButton icon='arrow-left' size={35} color='white' onPress={() => { navigation.pop() }} />
+
+        <View style={{ height: windowHeight * 0.05 }} />
+
+        <View style={{ width: '60%', alignSelf: 'center', flexDirection: 'row' }}>
+          <Image style={{ flex: 1, flexShrink: 1, resizeMode: 'contain' }} source={require('../assets/Bulletin_text_white.png')} />
         </View>
 
         <View style={{ height: windowHeight * 0.10 }} />
@@ -85,7 +84,7 @@ export default function CreateAccount({ navigation }) {
           autoCompleteType='email'
           theme={theme}
         />
-        <HelperText style={{width:'85%', alignSelf:'center'}} type='error' visible={emailError()}>Email address invalid. Only accepting @purdue.edu addresses</HelperText>
+        <HelperText style={{ width: '85%', alignSelf: 'center' }} type='error' visible={emailError()}>Email address invalid. Only accepting @purdue.edu addresses</HelperText>
 
         <TextInput
           mode='outlined'
@@ -110,24 +109,16 @@ export default function CreateAccount({ navigation }) {
           label='Confirm password'
           theme={theme}
         />
-        <HelperText style={{width:'85%', alignSelf:'center'}} type='error' visible={passwordError()}> {errorMsg}</HelperText>
+        <HelperText style={{ width: '85%', alignSelf: 'center' }} type='error' visible={passwordError()}> {errorMsg}</HelperText>
 
 
 
 
       </KeyboardAwareScrollView>
 
-      <View style={{ flex: 0 }}>
-        <TouchableOpacity onPress={() => signUp(emailText.trim(), passwordText,emailError,passwordError)}>
-          <LinearGradient
-            start={[0.1, 0.1]}
-            end={[0.9, 0.9]}
-            colors={['rgba(255,255,255,0.2)', 'rgba(255,255,255, 0.2)']}  //'rgba(56, 222, 255, 1)','rgba(153, 177, 255, 1)'
-            style={styles.button}>
-            <Text style={styles.button_text}>Create account</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity onPress={() => signUp(emailText.trim(), passwordText, emailError, passwordError)} style={styles.button}>
+        <Text style={styles.button_text}>Create account</Text>
+      </TouchableOpacity>
 
       <View style={{ height: windowHeight * 0.06 }} />
 

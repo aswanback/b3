@@ -60,22 +60,22 @@ export default function Login({ navigation }) {
         <TextInput
           style={styles.input}
           label='Email'
+          theme={theme}
           mode='outlined'
           onChangeText={onChangeEmail}
           autoCapitalize='none'
           value={emailText}
           autoCompleteType='email'
-          theme={theme}
         />
 
         <View style={{ height: 10 }} />
 
         <TextInput
           style={styles.input}
+          theme={theme}
           error={isWrongPassword}
           label='Password'
           mode='outlined'
-          theme={theme}
           autoCapitalize='none'
           onChangeText={onChangePassword}
           value={passwordText}

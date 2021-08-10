@@ -218,7 +218,7 @@ export default function Board({ navigation }) { //add {navigation, route} in the
           <Image source={require('../assets/Bulletin_text_blue.png')} style={{ resizeMode: 'contain', flexShrink: 1 }} />
         </View>
         <Pressable onPress={() => navigation.navigate('filters')}>
-          {({ pressed }) => (<Icon name={pressed ? 'filter-menu-outline' : 'filter-menu'} size={30} style={styles.icon_top} />)}
+          {({ pressed }) => (<Icon name={pressed ? 'sort-reverse-variant' : 'sort-variant'} size={30} style={styles.icon_top} />)}
         </Pressable>
       </Appbar.Header>
 
