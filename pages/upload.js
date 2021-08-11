@@ -19,16 +19,13 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
     It has its own Modal which is the DatePicker scroll wheel
     You aren't allowed to change the text in the datepicker input-text, its a cheese to make them look the same
     Not sure how to export the contact, date, and org info but i imagine its more provider shit that i'll work on
-
-    If my strat with porting all the variables here back to board works, you shouldnt need anything from this file and pickImage
-    will end up here, but that's up in the air as of now.
-
 */
 
 
 
 
 export function UploadModal(props) {
+    
 
     const [date, setDate] = useState(new Date());
     const [org, setOrg] = useState(null);
@@ -113,7 +110,7 @@ export function UploadModal(props) {
                     <TouchableOpacity onPress={() => { setDateVis(true) }}>
                         <View pointerEvents='box-only'>
                             <TextInput
-                                label='Date of event'
+                                label='Date of event (if applicable)'
                                 mode='outlined'
                                 style={styles.input}
                                 onChangeText={onChangeOrg}

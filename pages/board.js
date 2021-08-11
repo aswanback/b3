@@ -13,6 +13,9 @@ import { AuthContext } from './auth.js';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { UploadModal } from './upload';
 import { PopupScreen } from './popup.js';
+import GallerySwiper from "react-native-gallery-swiper";
+import { IconAndButton } from './settings.js';
+import { BlurView } from 'expo-blur';
 
 /*
    function foo() {} is same as const foo = () => {} just fyi 
@@ -59,6 +62,7 @@ export default function Board({ navigation }) { //add {navigation, route} in the
   // useEffect to download all flyer data on initial render
   useEffect(() => {
     //downloadFlyers()
+    setFlyers([])
   }, []); // empty array dependency means it only runs on initial render
 
   function downloadFlyers() {
@@ -111,7 +115,9 @@ export default function Board({ navigation }) { //add {navigation, route} in the
     // you have org, contact, date, and flyerUri variables
 
     // upload image
+    setFlyers(flyers => [...flyers, { uri: flyerUri }]);
 
+    /*
     if (doneDownloading == false) {
       console.log("not done downloading")
       return
@@ -147,9 +153,8 @@ export default function Board({ navigation }) { //add {navigation, route} in the
           });
         });
       });
-
-
     });
+    */
 
   }
 
@@ -166,8 +171,8 @@ export default function Board({ navigation }) { //add {navigation, route} in the
   }
 
 
-  
-  function deleteAccount(userUID) { 
+
+  function deleteAccount(userUID) {
 
     firebase.database().ref("numFlyers").once('value').then(querySnapShot => {
 
@@ -214,11 +219,11 @@ export default function Board({ navigation }) { //add {navigation, route} in the
         <Pressable onPress={() => navigation.navigate("settings")}>
           {({ pressed }) => (<Icon name={pressed ? 'account-outline' : 'account'} size={30} style={styles.icon_top} />)}
         </Pressable>
-        <View style={{ flex: 1, flexDirection: 'row', paddingHorizontal: 75 }}>
+        <View style={{ flex: 1, flexDirection: 'row', paddingHorizontal: 75, paddingTop: 10 }}>
           <Image source={require('../assets/Bulletin_text_blue.png')} style={{ resizeMode: 'contain', flexShrink: 1 }} />
         </View>
         <Pressable onPress={() => navigation.navigate('filters')}>
-          {({ pressed }) => (<Icon name={pressed ? 'sort-reverse-variant' : 'sort-variant'} size={30} style={styles.icon_top} />)}
+          {({ pressed }) => (<Icon name={pressed ? 'camera-outline' : 'camera'} size={30} color='black' style={styles.icon_top} />)}
         </Pressable>
       </Appbar.Header>
 
@@ -228,21 +233,22 @@ export default function Board({ navigation }) { //add {navigation, route} in the
         data={flyers} // array of image sources, not the images themselves
         numColumns={2}
         directionalLockEnabled={true}
-        style={{ flexDirection: 'row', marginHorizontal: 10, }}
         showsHorizontalScrollIndicator={false}
+        style={{ flex: 1, flexDirection: 'row', marginHorizontal: 10, }}
+        bounces={false}
         overScrollMode='never'
-        renderItem={({ item,index }) => {
+        renderItem={({ item, index }) => {
           //const [width, setWidth] = useState(200);
           //const [height, setHeight] = useState(200);
           //console.log(index.toString());
           //Image.getSize(item, (width, height) => {setWidth(width), setHeight(height)});
 
           return (
-            <TouchableOpacity onPress={()=>{setPopupVis(true); setPopupItem(index.toString())}}>
-              <View style={{flexDirection: 'row' }} >
-              <Image source={item} style={{ width: 200, height: 200, resizeMode: 'contain' }} />
+            <TouchableOpacity onPress={() => { setPopupVis(true); setPopupItem(index.toString()) }}>
+              <View style={{ flexDirection: 'row' }} >
+                <Image source={item} style={{ width: 200, height: 200, resizeMode: 'contain' }} />
               </View>
-            </TouchableOpacity>            
+            </TouchableOpacity>
 
           );
         }}
@@ -295,22 +301,40 @@ export default function Board({ navigation }) { //add {navigation, route} in the
 
 
       {/* click on picture modal */}
-      <Modal visible={popupVis} presentationStyle='fullScreen' animationType='slide'>
-        {/* Modal header */}
-        <Appbar.Header style={[styles.appbar, { height: 50 }]}>
-          <View style={{ flex: 1 }} />
+      <Modal visible={popupVis} animationType='fade' transparent={true}>
+        <BlurView intensity={100} tint='default' style={{flex: 1, paddingHorizontal: 10}}>
+        
+          <Appbar.Header style={styles.appbar_gallery}>
+            <View style={{ flex: 0.2 }} />
+            <View style={{ flexDirection: 'column' }}>
+              <Text style={styles.popup_text}>Posted by:</Text>
+              <Text style={styles.popup_text}>{org}</Text>
+            </View>
+            <View style={{ flex: 1 }} />
+            <View style={{ flexDirection: 'column' }}>
+              <Text style={styles.popup_text}>Occuring on:</Text>
+              <Text style={styles.popup_text}>{date.toDateString()}</Text>
+            </View>
+            <View style={{ flex: 1 }} />
+            <IconButton icon='close-circle-outline' color='black' onPress={() => { setPopupVis(false); }} />
+          </Appbar.Header>
 
-          <Text style={styles.title}>Popup</Text>
-          <View style={{ flex: 1 }} />
-          <View style={{ width: 70 }} >
-            <Button title='Done' onPress={() => { setPopupVis(false); }} />
-          </View>
-        </Appbar.Header>
+          <GallerySwiper images={flyers} onSwipeDownReleased={() => setPopupVis(false)} style={{backgroundColor:'transparent'}}/>
 
-        <PopupScreen popupItem={popupItem} deleteFlyer={deleteFlyer}/>
-
+          <Appbar.Header style={styles.appbar_gallery}>
+            <View style={{ flex: 0.05 }} />
+            <IconAndButton text='' icon='pin' size={25} color='black' buttonStyle={{ borderTopWidth: 0 }} textStyle={[styles.popup_text]} onPress={null} />
+            <View style={{ flex: 0.05 }} />
+            <IconAndButton text='' icon='delete' size={25} buttonStyle={{ borderTopWidth: 0 }} textStyle={[styles.popup_text]} color='black' onPress={null} />
+            <View style={{ flex: 1 }} />
+            <View style={{ flexDirection: 'column' }}>
+              <Text style={styles.popup_text}>Contact at: {contact}</Text>
+            </View>
+            <View style={{ flex: 0.1 }} />
+          </Appbar.Header>
+       
+        </BlurView>
       </Modal>
-
     </ImageBackground>
   );
   //#endregion

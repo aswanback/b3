@@ -88,6 +88,13 @@ export const styles = EStyleSheet.create({ // getting a delay in background show
         justifyContent: 'center',
         marginTop: StatusBar.currentHeight,
     },
+    appbar_gallery: {
+        width: '100%',
+        height: '6rem',
+        backgroundColor: 'transparent',
+        justifyContent: 'center',
+        marginTop: StatusBar.currentHeight,
+    },
 
     input: {
         width: '85%',
@@ -153,6 +160,14 @@ export const styles = EStyleSheet.create({ // getting a delay in background show
         height: '100%', 
         width: '30%', 
         backgroundColor: 'rgba(0,0,0,0.3)',
-    }
+    },
+
+    popup_text: {
+        alignSelf: 'center',
+        fontSize: '1.6rem',
+        flex:0,
+        flexDirection:'row',
+        color: 'black',
+    },
 
 });

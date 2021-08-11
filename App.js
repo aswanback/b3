@@ -15,6 +15,9 @@ import Board from './pages/board';
 import Settings from './pages/settings';
 import ForgotPassword from './pages/forgotpassword';
 import Filters from './pages/filters';
+import { LogBox } from 'react-native';
+
+
 
 /* 
  Alright dipshit here's your guide to the code
@@ -74,6 +77,7 @@ if (!firebase.apps.length) {
 const Stack = createStackNavigator();
 
 export default function App({ navigation }) {
+  LogBox.ignoreLogs(['Warning: Failed prop type: Invalid prop `fontSize` of type `string` supplied to `Text`, expected `number`.']);
 
   //#region auth stuff - auth states, login/logout/signup, remember me firebase
   // sets up different auth states for transitioning through app

@@ -26,16 +26,23 @@ export default function CreateAccount({ navigation }) {
 
 
   function emailErrorMsg() {
-    const [txt, setTxt] = useState(null)
+    const [status, setStatus] = useState(false);
+    useEffect(()=>{
     if (emailText !== null && emailText.trim() !== null) {
       if (authState.email_in_use) {
-        setTxt('That email is already being used in an account')
+        setErrorMsg('That email is already being used in an account')
+        setStatus(true)
       }
       if (!emailText.trim().includes('@purdue.edu')) {
-        setTxt('Invalid email. Only accepting @purdue.edu emails at this time')
+        setErrorMsg('Invalid email. Only accepting @purdue.edu emails at this time')
+        setStatus(true)
       }
+    } else {
+      setErrorMsg(null)
+      setStatus(false)
     }
-    return txt;
+  },[authState.email_in_use,emailText])
+  return status;
   }
 
   // password match confirmPassword, password length requirement, we can add others if really needed
@@ -84,7 +91,7 @@ export default function CreateAccount({ navigation }) {
           autoCompleteType='email'
           theme={theme}
         />
-        <HelperText style={{ width: '85%', alignSelf: 'center' }} type='error' visible={emailError()}>Email address invalid. Only accepting @purdue.edu addresses</HelperText>
+        <HelperText style={{ width: '85%', alignSelf: 'center' }} type='error' visible={emailErrorMsg()}>{errorMsg}</HelperText>
 
         <TextInput
           mode='outlined'
