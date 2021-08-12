@@ -175,6 +175,10 @@ export default function App({ navigation }) {
 
       },
 
+      camera: () => {
+        console.log('camera')
+      },
+
       // Filters
       filter1: () => {
         console.log('filter 1')
@@ -206,19 +210,19 @@ export default function App({ navigation }) {
     <CustContext.Provider value={custContext} >
       <AuthContext.Provider value={authContext} >
         <NavigationContainer>
-          <Stack.Navigator screenOptions={{ headerShown: false}}>
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
             {authState.auth ? (     // User is signed in - can only access below screens
               <>
-                <Stack.Screen name='board' component={Board}/>
+                <Stack.Screen name='board' component={Board} />
                 <Stack.Screen name='settings' component={Settings} options={{ presentation: 'transparentModal', backgroundColor: 'transparent', animationTypeForReplace: 'push', animationEnabled: true }} />
                 <Stack.Screen name='filters' component={Filters} options={{ backgroundColor: 'transparent', animationTypeForReplace: 'pop', animationEnabled: true }} />
               </>
             ) : (                   // User is signed out - can only access below screens
               <>
                 <Stack.Screen name="welcome" component={Welcome} />
-                <Stack.Screen name="login" component={Login}/>
-                <Stack.Screen name="createAccount" component={CreateAccount}/>
-                <Stack.Screen name="forgotPassword" component={ForgotPassword}/>
+                <Stack.Screen name="login" component={Login} />
+                <Stack.Screen name="createAccount" component={CreateAccount} />
+                <Stack.Screen name="forgotPassword" component={ForgotPassword} />
               </>
             )}
           </Stack.Navigator>

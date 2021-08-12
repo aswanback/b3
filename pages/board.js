@@ -37,7 +37,7 @@ import { BlurView } from 'expo-blur';
 
 // Main board page
 export default function Board({ navigation }) { //add {navigation, route} in the paranthesis to use navigation
-  const { signOut } = React.useContext(AuthContext);
+  const { signOut,camera } = React.useContext(AuthContext);
   const [flyers, setFlyers] = useState([]);
   const [doneDownloading, setDownloadStatus] = useState(false);
   const [modalVis, setModalVis] = useState(false);
@@ -207,6 +207,15 @@ export default function Board({ navigation }) { //add {navigation, route} in the
     })();
   }, []);
 
+  function renderItem ({ item, index }) {
+    return (
+      <TouchableOpacity onPress={() => { setPopupVis(true); setPopupItem(index.toString()) }}>
+        <View style={{ flexDirection: 'row' }} >
+          <Image source={item} style={{ flex: 1, width: 200, height: 200 }} />
+        </View>
+      </TouchableOpacity>
+    );
+  }
 
 
   //#endregion
@@ -222,7 +231,7 @@ export default function Board({ navigation }) { //add {navigation, route} in the
         <View style={{ flex: 1, flexDirection: 'row', paddingHorizontal: 75, paddingTop: 10 }}>
           <Image source={require('../assets/Bulletin_text_blue.png')} style={{ resizeMode: 'contain', flexShrink: 1 }} />
         </View>
-        <Pressable onPress={() => navigation.navigate('filters')}>
+        <Pressable onPress={camera}>
           {({ pressed }) => (<Icon name={pressed ? 'camera-outline' : 'camera'} size={30} color='black' style={styles.icon_top} />)}
         </Pressable>
       </Appbar.Header>
@@ -237,21 +246,7 @@ export default function Board({ navigation }) { //add {navigation, route} in the
         style={{ flex: 1, flexDirection: 'row', marginHorizontal: 10, }}
         bounces={false}
         overScrollMode='never'
-        renderItem={({ item, index }) => {
-          //const [width, setWidth] = useState(200);
-          //const [height, setHeight] = useState(200);
-          //console.log(index.toString());
-          //Image.getSize(item, (width, height) => {setWidth(width), setHeight(height)});
-
-          return (
-            <TouchableOpacity onPress={() => { setPopupVis(true); setPopupItem(index.toString()) }}>
-              <View style={{ flexDirection: 'row' }} >
-                <Image source={item} style={{ width: 200, height: 200, resizeMode: 'contain' }} />
-              </View>
-            </TouchableOpacity>
-
-          );
-        }}
+        renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
       />
 
