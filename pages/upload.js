@@ -37,16 +37,16 @@ export function UploadModal(props) {
     const onChangeDate = (event, selectedDate) => {
         const currentDate = selectedDate || date;
         setDate(currentDate);
-        props.setDate(currentDate);
+        props.setDate(dates => [...dates, currentDate]);
     };
 
     const onChangeOrg = (org) => {
         props.setOrg(org);
-        setOrg(org);
+        props.setOrg(orgs => [...orgs, org]);
     }
     const onChangeContact = (contact) => {
         props.setContact(contact);
-        setContact(contact);
+        props.setContact(contacts => [...contacts, contact]);
     }
 
     async function pickImage() {
@@ -64,7 +64,7 @@ export function UploadModal(props) {
             quality: 1,
         });
         if (!result.cancelled) {
-            props.setFlyerUri(result.uri);
+            props.setUploadUri(result.uri);
             setUri(result.uri);
             //setFlyers(Flyers => [...Flyers, { uri: result.uri }]); // updates flyers array with new uri
             return (result.uri);

@@ -37,18 +37,19 @@ import { BlurView } from 'expo-blur';
 
 // Main board page
 export default function Board({ navigation }) { //add {navigation, route} in the paranthesis to use navigation
-  const { signOut,camera } = React.useContext(AuthContext);
+  const { camera } = React.useContext(AuthContext);
+  
   const [flyers, setFlyers] = useState([]);
-  const [doneDownloading, setDownloadStatus] = useState(false);
+  const [org, setOrg] = useState([]);
+  const [date, setDate] = useState([]);
+  const [contact, setContact] = useState([]);
+
   const [modalVis, setModalVis] = useState(false);
   const [popupVis, setPopupVis] = useState(false);
-  const [popupItem, setPopupItem] = useState('');
+  const [uploadUri, setUploadUri] = useState('init_uri');
+  const [currentIndex, setCurrentIndex] = useState(null);
 
-  const [org, setOrg] = useState('init_org');
-  const [date, setDate] = useState(new Date());
-  const [contact, setContact] = useState('init_contact');
-  const [flyerUri, setFlyerUri] = useState('init_uri');
-
+  const [doneDownloading, setDownloadStatus] = useState(false);
   const [urls, addToURLs] = useState([])
   const [uids, addToUIDs] = useState([])
   const [realNumbers, setRealNumbers] = useState([]) // IMPORTANT
@@ -76,7 +77,7 @@ export default function Board({ navigation }) { //add {navigation, route} in the
       const numFlyersInDatabase = Number(querySnapShot.val())
 
       for (let i = 1; i <= numFlyersInDatabase; i++) {
-
+ß
         firebase.database().ref(i).child('status').once('value').then(status => {
           firebase.database().ref(i).child('url').once('value').then(url => {
             firebase.database().ref(i).child('uid').once('value').then(uid => {
@@ -112,10 +113,10 @@ export default function Board({ navigation }) { //add {navigation, route} in the
 
   function beginUpload() {
     // start to upload the flyer based on the uri and metadata
-    // you have org, contact, date, and flyerUri variables
+    // you have org, contact, date, and uploadUri variables
 
     // upload image
-    setFlyers(flyers => [...flyers, { uri: flyerUri }]);
+    setFlyers(flyers => [...flyers, { uri: uploadUri }]);
 
     /*
     if (doneDownloading == false) {
@@ -129,11 +130,11 @@ export default function Board({ navigation }) { //add {navigation, route} in the
       const newNumFlyers = numFlyers + 1;
       var ref = firebase.storage().ref().child(newNumFlyers.toString());
 
-      setFlyers(flyers => [...flyers, { uri: flyerUri }]);
+      setFlyers(flyers => [...flyers, { uri: uploadUri }]);
       addToUIDs(uids => [...uids, firebase.auth().currentUser.uid]);
       setRealNumbers(realNumbers => [...realNumbers, newNumFlyers]);
 
-      fetch(flyerUri).then(response => {
+      fetch(uploadUri).then(response => {
         response.blob().then(blob => {
           ref.put(blob).then(data => {
             data.ref.getDownloadURL().then(downloadURL => {
@@ -207,9 +208,11 @@ export default function Board({ navigation }) { //add {navigation, route} in the
     })();
   }, []);
 
+
   function renderItem ({ item, index }) {
+    setCurrentIndex(index)
     return (
-      <TouchableOpacity onPress={() => { setPopupVis(true); setPopupItem(index.toString()) }}>
+      <TouchableOpacity onPress={() => setPopupVis(true)}>
         <View style={{ flexDirection: 'row' }} >
           <Image source={item} style={{ flex: 1, width: 200, height: 200 }} />
         </View>
@@ -278,7 +281,7 @@ export default function Board({ navigation }) { //add {navigation, route} in the
         {/* Modal header */}
         <Appbar.Header style={[styles.appbar, { height: 50 }]}>
           <View style={{ width: 70 }} >
-            <Button title='Cancel' onPress={() => { setModalVis(false); setOrg(null); setContact(null); setDate(null); setFlyerUri(null); }} />
+            <Button title='Cancel' onPress={() => { setModalVis(false); setOrg(null); setContact(null); setDate(null); setuploadUri(null); }} />
           </View>
           <View style={{ flex: 1 }} />
 
@@ -290,7 +293,7 @@ export default function Board({ navigation }) { //add {navigation, route} in the
         </Appbar.Header>
 
         {/* Content of the modal - upload.js */}
-        <UploadModal setOrg={setOrg} setDate={setDate} setContact={setContact} setFlyerUri={setFlyerUri} />
+        <UploadModal setOrg={setOrg} setDate={setDate} setContact={setContact} setUploadUri={setUploadUri} />
 
       </Modal>
 
@@ -303,12 +306,12 @@ export default function Board({ navigation }) { //add {navigation, route} in the
             <View style={{ flex: 0.2 }} />
             <View style={{ flexDirection: 'column' }}>
               <Text style={styles.popup_text}>Posted by:</Text>
-              <Text style={styles.popup_text}>{org}</Text>
+              <Text style={styles.popup_text}>{org[currentIndex]}</Text>
             </View>
             <View style={{ flex: 1 }} />
             <View style={{ flexDirection: 'column' }}>
               <Text style={styles.popup_text}>Occuring on:</Text>
-              <Text style={styles.popup_text}>{date.toDateString()}</Text>
+              <Text style={styles.popup_text}>{date[1].toDateString()}</Text>
             </View>
             <View style={{ flex: 1 }} />
             <IconButton icon='close-circle-outline' color='black' onPress={() => { setPopupVis(false); }} />
@@ -323,7 +326,7 @@ export default function Board({ navigation }) { //add {navigation, route} in the
             <IconAndButton text='' icon='delete' size={25} buttonStyle={{ borderTopWidth: 0 }} textStyle={[styles.popup_text]} color='black' onPress={null} />
             <View style={{ flex: 1 }} />
             <View style={{ flexDirection: 'column' }}>
-              <Text style={styles.popup_text}>Contact at: {contact}</Text>
+              <Text style={styles.popup_text}>Contact at: {contact[currentIndex]}</Text>
             </View>
             <View style={{ flex: 0.1 }} />
           </Appbar.Header>
